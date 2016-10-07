@@ -26,6 +26,8 @@ class UserController{
             }
         }
         if($userModel->addUser($data)){
+            mail($data['email'], "Course Management System",
+            "Congratulations".$data['name']."! You've been successfully registered. Have a nice day.");
             header('HTTP/1.1 201 Created', true, 201);
         }
     }
