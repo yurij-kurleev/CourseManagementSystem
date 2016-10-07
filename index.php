@@ -1,2 +1,2 @@
 <?
-echo "Hello fghdgfh";
+echo "Hello";
