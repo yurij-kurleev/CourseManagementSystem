@@ -10,15 +10,6 @@ try{
     exit();
 }
 
-$sql_db ="CREATE DATABASE IF NOT EXISTS scms";
-try{
-    $link->exec($sql_db);
-    print_r($link->errorInfo());
-}catch (PDOException $e){
-    echo $e->getCode().": ".$e->getMessage();
-    exit();
-}
-
 //User
 $sql = "CREATE TABLE IF NOT EXISTS User
 (id_u INT(11) NOT NULL AUTO_INCREMENT,
