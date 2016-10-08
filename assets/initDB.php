@@ -28,6 +28,7 @@ try{
     exit();
 }
 
+//courses
 $sql = "CREATE TABLE IF NOT EXISTS courses
 (id_course INT(11) NOT NULL AUTO_INCREMENT,
 title VARCHAR(100) NOT NULL,
