@@ -17,7 +17,7 @@ $sql = "CREATE TABLE IF NOT EXISTS User
  password VARCHAR(200) NOT NULL,
  email VARCHAR(50) NOT NULL,
  register_date INT(14) NOT NULL,
- role INT(3) NOT NULL,
+ role VARCHAR(20) NOT NULL,
  PRIMARY KEY (id_u),
  UNIQUE (email))";
 try{
