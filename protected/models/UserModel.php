@@ -92,4 +92,42 @@ class UserModel{
             exit();
         }
     }
+
+    public function getUserByEmailPassword(array $data){
+        try{
+            $link = PDOConnection::getInstance()->getConnection();
+            $sql = "SELECT * FROM User WHERE email = :email AND password = :password";
+            $stmt = $link->prepare($sql);
+            $stmt->execute(array(':email' => $data['email'], ':password' => $data['password']));
+            if (!empty($stmt->errorInfo()[1])){
+                header("HTTP/1.1 500 Internal Server Error", true, 500);
+                echo "{
+                    \"errors\": [
+                        {
+                            \"status\": \"500\",
+                            \"source\": { \"pointer\": \"/protected/models/UserModel/getUserByEmailPassword\" },
+                            \"title\": \"Internal error\",
+                            \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
+                        }
+                    ]
+                }";
+                exit();
+            }
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $user;
+        }catch(PDOException $e){
+            header("HTTP/1.1 500 Internal Server Error", true, 500);
+            echo "{
+                    \"errors\": [
+                        {
+                            \"status\": \"500\",
+                            \"source\": { \"pointer\": \"/protected/models/UserModel/getUserByEmailPassword\" },
+                            \"title\": \"Internal error\",
+                            \"detail\": \"Error ".$e->getMessage()."\"
+                        }
+                    ]
+                }";
+            exit();
+        }
+    }
 }
