@@ -10,8 +10,8 @@ try{
     exit();
 }
 
-//User
-$sql = "CREATE TABLE IF NOT EXISTS User
+//users
+$sql = "CREATE TABLE IF NOT EXISTS users
 (id_u INT(11) NOT NULL AUTO_INCREMENT,
  name VARCHAR(75) NOT NULL,
  password VARCHAR(200) NOT NULL,
@@ -22,7 +22,9 @@ $sql = "CREATE TABLE IF NOT EXISTS User
  UNIQUE (email))";
 try{
     $link->exec($sql);
-    print_r($link->errorInfo());
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
 }catch (PDOException $e){
     echo $e->getCode().": ".$e->getMessage();
     exit();

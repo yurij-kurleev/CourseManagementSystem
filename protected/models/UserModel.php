@@ -19,7 +19,7 @@ class UserModel{
                 exit();
             }
             $connection = PDOConnection::getInstance()->getConnection();
-            $sql = "INSERT INTO User(name, password, email, register_date, role)
+            $sql = "INSERT INTO users(name, password, email, register_date, role)
                     VALUES(?, ?, ?, ?, ?)";
             $stmt = $connection->prepare($sql);
             $stmt->execute($data);
