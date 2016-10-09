@@ -31,9 +31,6 @@ class UserController{
             header('HTTP/1.1 201 Created', true, 201);
         }
     }
-            header('HTTP/1.1 201 Created', true, 201);
-        }
-    }
 
     public function meAction(){
         $userModel = new UserModel();
