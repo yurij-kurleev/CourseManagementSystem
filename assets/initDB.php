@@ -30,4 +30,23 @@ try{
     exit();
 }
 
+//courses
+$sql = "CREATE TABLE IF NOT EXISTS courses
+(id_course INT(11) NOT NULL AUTO_INCREMENT,
+title VARCHAR(100) NOT NULL,
+description TEXT NOT NULL,
+id_auth INT(11) NOT NULL,
+UNIQUE (title),
+PRIMARY KEY (id_course),
+FOREIGN KEY (id_auth) REFERENCES User(id_u))";
+try {
+    $link->exec($sql);
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
+    exit();
+}
+
 echo "Completed";

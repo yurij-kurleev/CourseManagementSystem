@@ -16,7 +16,7 @@ class UserController{
                     \"errors\": [
                         {
                            \"status\": \"400\",
-                           \"source\": { \"pointer\": \"/protected/controllers/UserController/registerLecturerAction\" },
+                           \"source\": { \"pointer\": \"/protected/controllers/UserController/registerUserAction\" },
                            \"title\":  \"Missing params\",
                            \"detail\": \"Missing param: `$key` !\"
                         }
@@ -70,7 +70,6 @@ class UserController{
             exit();
         }
         else{
-            header("HTTP/1.1 200 OK", true, 200);
             FrontController::getInstance()->setBody(json_encode($userInfo));
         }
     }

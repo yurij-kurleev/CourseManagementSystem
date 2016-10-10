@@ -20,7 +20,7 @@ class UserModel{
             }
             $connection = PDOConnection::getInstance()->getConnection();
             $sql = "INSERT INTO users(name, password, email, register_date, role)
-                    VALUES(?, ?, ?, ?, ?)";
+                    VALUES(:name, :password, :email, :register_date, :role)";
             $stmt = $connection->prepare($sql);
             $stmt->execute($data);
             if(!empty($stmt->errorInfo()[1])){
@@ -57,7 +57,7 @@ class UserModel{
     public function isRegistered($email){
         try {
             $link = PDOConnection::getInstance()->getConnection();
-            $sql = "SELECT id_u FROM User WHERE email = ?";
+            $sql = "SELECT id_u FROM users WHERE email = ?";
             $stmt = $link->prepare($sql);
             $stmt->bindParam(1, $email, PDO::PARAM_STR);
             $stmt->execute();
@@ -96,9 +96,10 @@ class UserModel{
     public function getUserByEmailPassword(array $data){
         try{
             $link = PDOConnection::getInstance()->getConnection();
-            $sql = "SELECT * FROM User WHERE email = :email AND password = :password";
+            $sql = "SELECT id_u, name, password, email, register_date, role FROM users 
+                    WHERE email = :email AND password = :password";
             $stmt = $link->prepare($sql);
-            $stmt->execute(array(':email' => $data['email'], ':password' => $data['password']));
+            $stmt->execute($data);
             if (!empty($stmt->errorInfo()[1])){
                 header("HTTP/1.1 500 Internal Server Error", true, 500);
                 echo "{

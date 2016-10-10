@@ -15,7 +15,7 @@ class CourseModel{
                 exit();
             }
             $link = PDOConnection::getInstance()->getConnection();
-            $sql = "INSERT INTO courses VALUES(?, ?, ?)";
+            $sql = "INSERT INTO courses(title, description, id_auth) VALUES(:title, :description, :id_auth)";
             $stmt = $link->prepare($sql);
             $stmt->execute($data);
             if ($stmt->errorInfo()[1]) {
@@ -30,7 +30,7 @@ class CourseModel{
                 ";
                 exit();
             }
-
+            return true;
         } catch (PDOException $e){
             header("HTTP/1.1 500 Internal Server Error", true, 500);
             echo "
@@ -38,7 +38,7 @@ class CourseModel{
                         \"status\": \"500\",
                         \"source\": { \"pointer\" : \"/protected/controllers/CourseModel/addCourse\"},
                         \"title\": \"Internal error\",
-                        \"description\": \"$e->getMessage()\" 
+                        \"description\": \"" . $e->getMessage() . "\"
                     ]
                 ";
             exit();
@@ -73,7 +73,7 @@ class CourseModel{
                         \"status\": \"500\",
                         \"source\": { \"pointer\" : \"/protected/controllers/CourseModel/isCourseCreated\"},
                         \"title\": \"Internal error\",
-                        \"description\": \"$e->getMessage()\" 
+                        \"detail\": \"" . $e->getMessage() . "\"
                     ]
                 ";
             exit();
