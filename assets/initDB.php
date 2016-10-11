@@ -28,6 +28,7 @@ try{
     exit();
 }
 
+<<<<<<< HEAD
 //courses
 $sql = "CREATE TABLE IF NOT EXISTS courses
 (id_course INT(11) NOT NULL AUTO_INCREMENT,
@@ -45,4 +46,6 @@ try{
     exit();
 }
 
+=======
+>>>>>>> origin/master
 echo "Completed";
