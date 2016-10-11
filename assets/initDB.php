@@ -11,7 +11,7 @@ try{
 }
 
 //User
-$sql = "CREATE TABLE IF NOT EXISTS User
+$sql = "CREATE TABLE IF NOT EXISTS users
 (id_u INT(11) NOT NULL AUTO_INCREMENT,
  name VARCHAR(75) NOT NULL,
  password VARCHAR(200) NOT NULL,
@@ -28,7 +28,6 @@ try{
     exit();
 }
 
-<<<<<<< HEAD
 //courses
 $sql = "CREATE TABLE IF NOT EXISTS courses
 (id_course INT(11) NOT NULL AUTO_INCREMENT,
@@ -46,6 +45,4 @@ try{
     exit();
 }
 
-=======
->>>>>>> origin/master
 echo "Completed";
