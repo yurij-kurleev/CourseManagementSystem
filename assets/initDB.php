@@ -38,7 +38,7 @@ description TEXT NOT NULL,
 id_auth INT(11) NOT NULL,
 UNIQUE (title),
 PRIMARY KEY (id_course),
-FOREIGN KEY (id_auth) REFERENCES User(id_u)
+FOREIGN KEY (id_auth) REFERENCES users(id_u)
 ON DELETE CASCADE
 ON UPDATE CASCADE,
 )";
@@ -86,11 +86,28 @@ mark NUMERIC(4,2) NOT NULL
 PRIMARY KEY (id_lesson))";
 try {
     $link->exec($sql);
-    if (!empty($link->errorInfo()[1])) {
+    print_r($link->errorInfo());
+}catch (PDOException $e){
+    echo $e->getCode().": ".$e->getMessage();
+    exit();
+}
+
+//lectures
+$sql = "CREATE TABLE IF NOT EXISTS lectures
+(id_lecture INT(11) NOT NULL AUTO_INCREMENT,
+title VARCHAR(100) NOT NULL,
+content TEXT NOT NULL,
+id_lesson INT(11) NOT NULL,
+UNIQUE (title),
+PRIMARY KEY (id_lecture),
+FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson))";
+try{
+    $link->exec($sql);
+    if (!empty($link->errorInfo()[1])){
         print_r($link->errorInfo());
     }
-} catch (PDOException $e) {
-    echo $e->getCode() . ": " . $e->getMessage();
+}catch (PDOException $e){
+    echo $e->getCode(). ": " . $e->getMessage();
     exit();
 }
 
