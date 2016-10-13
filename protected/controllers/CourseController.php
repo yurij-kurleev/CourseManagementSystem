@@ -94,8 +94,8 @@ class CourseController{
 
     public function deleteCourseAction(){
         $courseModel = new CourseModel();
-        $title_course = strip_tags(trim($_POST['id_course']));
-        if (empty($id_course)){
+        $title_course = strip_tags(trim($_POST['title']));
+        if (empty($title_course)){
             header("HTTP/1.1 400 Bad Request", true, 400);
             echo "
                     \"errors\": [
