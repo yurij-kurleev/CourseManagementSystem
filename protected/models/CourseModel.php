@@ -84,9 +84,10 @@ class CourseModel{
 
     /**/
 
-    public function getCourseByTitle($title){
-        try{
-            if ($this->isCourseCreated($title)){
+    public function getCourseByTitle($title)
+    {
+        try {
+            if ($this->isCourseCreated($title)) {
                 header("HTTP/1.1 403 Forbidden", true, 403);
                 echo "
                     \"errors\": [
@@ -117,7 +118,7 @@ class CourseModel{
             }
             $course = $stmt->fetch(PDO::FETCH_ASSOC);
             return $course;
-        } catch(PDOException $e){
+        } catch (PDOException $e) {
             header("HTTP/1.1 500 Internal Server Error", true, 500);
             echo "
                 \"errors\": [
@@ -131,10 +132,11 @@ class CourseModel{
         }
     }
 
-    public function getCoursesListByLecturerEmail($email_lecturer){
+    public function getCoursesListByLecturerEmail($email_lecturer)
+    {
         $userModel = new UserModel();
-        try{
-            if (!$userModel->isRegistered($email_lecturer)){
+        try {
+            if (!$userModel->isRegistered($email_lecturer)) {
                 header("HTTP/1.1 404 Not Found", true, 404);
                 echo "
                         \"errors\": [
@@ -165,7 +167,7 @@ class CourseModel{
             }
             $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $courses;
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             header("HTTP/1.1 500 Internal Server Error", true, 500);
             echo "
                         \"errors\": [
@@ -179,9 +181,10 @@ class CourseModel{
         }
     }
 
-    public function deleteCourse($title){
-        try{
-            if ($this->isCourseCreated($title)){
+    public function deleteCourse($title)
+    {
+        try {
+            if ($this->isCourseCreated($title)) {
                 header("HTTP/1.1 403 Forbidden", true, 403);
                 echo "
                     \"errors\": [
@@ -211,7 +214,7 @@ class CourseModel{
                 exit();
             }
             return true;
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             header("HTTP/1.1 500 Internal Server Error", true, 500);
             echo "
                         \"errors\": [
@@ -224,10 +227,11 @@ class CourseModel{
             exit();
         }
     }
-    
-    public function updateCourse(array $data){
-        try{
-            if ($this->isCourseCreated($data['title'])){
+
+    public function updateCourse(array $data)
+    {
+        try {
+            if ($this->isCourseCreated($data['title'])) {
                 header("HTTP/1.1 403 Forbidden", true, 403);
                 echo "
                     \"errors\": [
@@ -256,7 +260,7 @@ class CourseModel{
                 exit();
             }
             return true;
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             header("HTTP/1.1 500 Internal Server Error", true, 500);
             echo "
                         \"errors\": [

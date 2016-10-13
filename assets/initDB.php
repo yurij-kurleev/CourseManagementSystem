@@ -87,8 +87,8 @@ PRIMARY KEY (id_lesson))";
 try {
     $link->exec($sql);
     print_r($link->errorInfo());
-}catch (PDOException $e){
-    echo $e->getCode().": ".$e->getMessage();
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
     exit();
 }
 
@@ -101,13 +101,13 @@ id_lesson INT(11) NOT NULL,
 UNIQUE (title),
 PRIMARY KEY (id_lecture),
 FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson))";
-try{
+try {
     $link->exec($sql);
-    if (!empty($link->errorInfo()[1])){
+    if (!empty($link->errorInfo()[1])) {
         print_r($link->errorInfo());
     }
-}catch (PDOException $e){
-    echo $e->getCode(). ": " . $e->getMessage();
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
     exit();
 }
 
