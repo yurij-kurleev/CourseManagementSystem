@@ -26,11 +26,10 @@ class CourseController{
         }
     }
 
-    public function getCourseAction()
-    {
+    public function getCourseAction(){
         $courseModel = new CourseModel();
         $course_title = strip_tags(trim($_POST['title']));
-        if (empty($course_title)) {
+        if (empty($course_title)){
             header("HTTP/1.1 400 Bad Request", true, 400);
             echo "
                     \"errors\": [
@@ -43,7 +42,7 @@ class CourseController{
             exit();
         }
         $course = $courseModel->getCourseByTitle($course_title);
-        if (empty($course)) {
+        if(empty($course)){
             header("HTTP/1.1 404 Not found", true, 404);
             echo "
                     \"errors\": [
@@ -54,16 +53,16 @@ class CourseController{
                     ]
                 ";
             exit();
-        } else {
+        }
+        else{
             FrontController::getInstance()->setBody(json_encode($course));
         }
     }
-
-    public function getCoursesListAction()
-    {
+    
+    public function getCoursesListAction(){
         $courseModel = new CourseModel();
         $email_lecturer = strip_tags(trim($_POST['email']));
-        if (empty($email_lecturer)) {
+        if (empty($email_lecturer)){
             header("HTTP/1.1 400 Bad Request", true, 400);
             echo "
                     \"errors\": [
@@ -76,7 +75,7 @@ class CourseController{
             exit();
         }
         $coursesList = $courseModel->getCoursesListByLecturerEmail($email_lecturer);
-        if (empty($coursesList)) {
+        if (empty($coursesList)){
             header("HTTP/1.1 404 Not found", true, 404);
             echo "
                     \"errors\": [
@@ -87,16 +86,16 @@ class CourseController{
                     ]
                 ";
             exit();
-        } else {
+        }
+        else{
             FrontController::getInstance()->setBody(json_encode($coursesList));
         }
     }
 
-    public function deleteCourseAction()
-    {
+    public function deleteCourseAction(){
         $courseModel = new CourseModel();
-        $title_course = strip_tags(trim($_POST['id_course']));
-        if (empty($id_course)) {
+        $title_course = strip_tags(trim($_POST['title']));
+        if (empty($title_course)){
             header("HTTP/1.1 400 Bad Request", true, 400);
             echo "
                     \"errors\": [
@@ -108,9 +107,10 @@ class CourseController{
                 ";
             exit();
         }
-        if ($courseModel->deleteCourse($title_course)) {
+        if ($courseModel->deleteCourse($title_course)){
             header("HTTP/1.1 200 OK");
-        } else {
+        }
+        else{
             header("HTTP/1.1 500 Internal Server Error", true, 500);
             echo "
                         \"errors\": [
@@ -123,17 +123,16 @@ class CourseController{
             exit();
         }
     }
-
-    public function updateCourseAction()
-    {
+    
+    public function updateCourseAction(){
         $courseModel = new CourseModel();
         $data = [
             'id_course' => strip_tags(trim($_POST['id_course'])),
             'title' => strip_tags(trim($_POST['title'])),
             'description' => strip_tags(trim($_POST['description']))
         ];
-        foreach ($data as $key => $value) {
-            if (empty($key)) {
+        foreach ($data as $key => $value){
+            if (empty($key)){
                 header("HTTP/1.1 400 Bad Request", true, 400);
                 echo "
                     \"errors\": [
@@ -146,9 +145,10 @@ class CourseController{
                 exit();
             }
         }
-        if ($courseModel->updateCourse($data)) {
+        if ($courseModel->updateCourse($data)){
             header("HTTP/1.1 200 OK");
-        } else {
+        }
+        else{
             header("HTTP/1.1 500 Internal Server Error", true, 500);
             echo "
                         \"errors\": [
