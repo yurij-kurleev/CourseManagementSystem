@@ -131,43 +131,4 @@ class UserModel{
             exit();
         }
     }
-
-    public function isUserExists($id_u){
-        try{
-            $link = PDOConnection::getInstance()->getConnection();
-            $sql = "SELECT id_u FROM users WHERE id_u = ?";
-            $stmt = $link->prepare($sql);
-            $stmt->bindParam(1, $id_u, PDO::PARAM_INT);
-            $stmt->execute();
-            if (!empty($stmt->errorInfo()[1])){
-                header("HTTP/1.1 500 Internal Server Error", true, 500);
-                echo "{
-                    \"errors\": [
-                        {
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\": \"/protected/models/UserModel/isUserExists\" },
-                            \"title\": \"Internal error\",
-                            \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
-                        }
-                    ]
-                }";
-                exit();
-            }
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            return !empty($user['id_u']);
-        }catch (PDOException $e){
-            header("HTTP/1.1 500 Internal Server Error", true, 500);
-            echo "{
-                    \"errors\": [
-                        {
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\": \"/protected/models/UserModel/isUserExists\" },
-                            \"title\": \"Internal error\",
-                            \"detail\": \"Error ".$e->getMessage()."\"
-                        }
-                    ]
-                }";
-            exit();
-        }
-    }
 }

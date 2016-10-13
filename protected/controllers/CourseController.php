@@ -28,8 +28,8 @@ class CourseController{
 
     public function getCourseAction(){
         $courseModel = new CourseModel();
-        $id_course = strip_tags(trim($_POST['id_course']));
-        if (empty($id_course)){
+        $course_title = strip_tags(trim($_POST['title']));
+        if (empty($course_title)){
             header("HTTP/1.1 400 Bad Request", true, 400);
             echo "
                     \"errors\": [
@@ -41,7 +41,7 @@ class CourseController{
                 ";
             exit();
         }
-        $course = $courseModel->getCourseById($id_course);
+        $course = $courseModel->getCourseByTitle($course_title);
         if(empty($course)){
             header("HTTP/1.1 404 Not found", true, 404);
             echo "
@@ -49,7 +49,7 @@ class CourseController{
                         \"status\": \"404\",
                         \"source\": { \"pointer\" : \"/protected/controllers/CourseController/getCourseAction\"},
                         \"title\": \"Not found\",
-                        \"detail\": \" Course with id_course: " . $id_course . " was not found.\"
+                        \"detail\": \" Course with title: " . $course_title . " was not found.\"
                     ]
                 ";
             exit();
@@ -61,20 +61,20 @@ class CourseController{
     
     public function getCoursesListAction(){
         $courseModel = new CourseModel();
-        $id_lecturer = strip_tags(trim($_POST['id_u']));
-        if (empty($id_lecturer)){
+        $email_lecturer = strip_tags(trim($_POST['email']));
+        if (empty($email_lecturer)){
             header("HTTP/1.1 400 Bad Request", true, 400);
             echo "
                     \"errors\": [
                         \"status\": \"400\",
                         \"source\": { \"pointer\" : \"/protected/controllers/CourseController/addCourseAction\"},
                         \"title\": \"Missing params\",
-                        \"description\": \" Missing param: id_lecturer !\" 
+                        \"description\": \" Missing param: email_lecturer !\" 
                     ]
                 ";
             exit();
         }
-        $coursesList = $courseModel->getCoursesListByLecturerId($id_lecturer);
+        $coursesList = $courseModel->getCoursesListByLecturerEmail($email_lecturer);
         if (empty($coursesList)){
             header("HTTP/1.1 404 Not found", true, 404);
             echo "
@@ -82,7 +82,7 @@ class CourseController{
                         \"status\": \"404\",
                         \"source\": { \"pointer\" : \"/protected/controllers/CourseController/getCoursesListAction\"},
                         \"title\": \"Not found\",
-                        \"detail\": \" Courses list was not found by id_lecturer: " . $id_lecturer . ".\"
+                        \"detail\": \" Courses list was not found by email_lecturer: " . $email_lecturer . ".\"
                     ]
                 ";
             exit();
@@ -94,7 +94,7 @@ class CourseController{
 
     public function deleteCourseAction(){
         $courseModel = new CourseModel();
-        $id_course = strip_tags(trim($_POST['id_course']));
+        $title_course = strip_tags(trim($_POST['id_course']));
         if (empty($id_course)){
             header("HTTP/1.1 400 Bad Request", true, 400);
             echo "
@@ -102,12 +102,12 @@ class CourseController{
                         \"status\": \"400\",
                         \"source\": { \"pointer\" : \"/protected/controllers/CourseController/deleteCourseAction\"},
                         \"title\": \"Missing params\",
-                        \"description\": \" Missing param: id_course !\" 
+                        \"description\": \" Missing param: title_course !\" 
                     ]
                 ";
             exit();
         }
-        if ($courseModel->deleteCourse($id_course)){
+        if ($courseModel->deleteCourse($title_course)){
             header("HTTP/1.1 200 OK");
         }
         else{
@@ -115,7 +115,7 @@ class CourseController{
             echo "
                         \"errors\": [
                             \"status\": \"500\",
-                            \"source\": { \"pointer\" : \"/protected/models/CourseController/deleteCourseAction\"},
+                            \"source\": { \"pointer\" : \"/protected/controllers/CourseController/deleteCourseAction\"},
                             \"title\": \"Internal error\",
                             \"description\": \" Deleting course failed.\" 
                         ]
@@ -153,7 +153,7 @@ class CourseController{
             echo "
                         \"errors\": [
                             \"status\": \"500\",
-                            \"source\": { \"pointer\" : \"/protected/models/CourseController/updateCourseAction\"},
+                            \"source\": { \"pointer\" : \"/protected/controllers/CourseController/updateCourseAction\"},
                             \"title\": \"Internal error\",
                             \"description\": \" Updating course failed.\" 
                         ]
