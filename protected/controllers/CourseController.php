@@ -1,131 +1,96 @@
 <?php
 class CourseController{
     public function addCourseAction(){
-        $courseModel = new CourseModel();
+        $courseService = new CourseService();
         $data = [
             'title' => strip_tags(trim($_POST['title'])),
             'description' => strip_tags(trim($_POST['description'])),
+            'date' => time(),
             'id_auth' => strip_tags(trim($_POST['id_auth']))
         ];
         foreach ($data as $key => $value){
             if (empty($value)){
-                header("HTTP/1.1 400 Bad Request", true, 400);
-                echo "
-                    \"errors\": [
-                        \"status\": \"400\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/CourseController/addCourseAction\"},
-                        \"title\": \"Missing params\",
-                        \"description\": \" Missing param: `$key` !\" 
-                    ]
-                ";
-                exit();
+                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
             }
         }
-        if ($courseModel->addCourse($data)){
-            header("HTTP/1.1 201 Created", true, 201);
+        try {
+            if ($courseService->addCourse($data)) {
+                HTTPResponseBuilder::getInstance()->sendSuccessRespond(201);
+            }
+        }catch (CourseAlreadyExistsException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
+        }
+        catch (StatementExecutingException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
     }
 
     public function getCourseAction(){
-        $courseModel = new CourseModel();
+        $courseService = new CourseService();
         $course_title = strip_tags(trim($_POST['title']));
         if (empty($course_title)){
-            header("HTTP/1.1 400 Bad Request", true, 400);
-            echo "
-                    \"errors\": [
-                        \"status\": \"400\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/CourseController/addCourseAction\"},
-                        \"title\": \"Missing params\",
-                        \"description\": \" Missing param: title !\" 
-                    ]
-                ";
-            exit();
+            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: 'course_title'");
         }
-        $course = $courseModel->getCourseByTitle($course_title);
-        if(empty($course)){
-            header("HTTP/1.1 404 Not found", true, 404);
-            echo "
-                    \"errors\": [
-                        \"status\": \"404\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/CourseController/getCourseAction\"},
-                        \"title\": \"Not found\",
-                        \"detail\": \" Course with title: " . $course_title . " was not found.\"
-                    ]
-                ";
-            exit();
-        }
-        else{
+        try {
+            $course = $courseService->getCourse($course_title);
             FrontController::getInstance()->setBody(json_encode($course));
+        }catch (CourseNotFoundException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        }
+        catch (StatementExecutingException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
     }
     
     public function getCoursesListAction(){
-        $courseModel = new CourseModel();
+        $courseService = new CourseService();
         $email_lecturer = strip_tags(trim($_POST['email']));
         if (empty($email_lecturer)){
-            header("HTTP/1.1 400 Bad Request", true, 400);
-            echo "
-                    \"errors\": [
-                        \"status\": \"400\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/CourseController/addCourseAction\"},
-                        \"title\": \"Missing params\",
-                        \"description\": \" Missing param: email_lecturer !\" 
-                    ]
-                ";
-            exit();
+            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: 'email_lecturer'");
         }
-        $coursesList = $courseModel->getCoursesListByLecturerEmail($email_lecturer);
-        if (empty($coursesList)){
-            header("HTTP/1.1 404 Not found", true, 404);
-            echo "
-                    \"errors\": [
-                        \"status\": \"404\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/CourseController/getCoursesListAction\"},
-                        \"title\": \"Not found\",
-                        \"detail\": \" Courses list was not found by email_lecturer: " . $email_lecturer . ".\"
-                    ]
-                ";
-            exit();
-        }
-        else{
+        try{
+            $coursesList = $courseService->getCoursesList($email_lecturer);
             FrontController::getInstance()->setBody(json_encode($coursesList));
+        }catch (LecturerNotFoundException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        }
+        catch (StatementExecutingException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
     }
 
     public function deleteCourseAction(){
-        $courseModel = new CourseModel();
-        $title_course = strip_tags(trim($_POST['title']));
-        if (empty($title_course)){
-            header("HTTP/1.1 400 Bad Request", true, 400);
-            echo "
-                    \"errors\": [
-                        \"status\": \"400\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/CourseController/deleteCourseAction\"},
-                        \"title\": \"Missing params\",
-                        \"description\": \" Missing param: title_course !\" 
-                    ]
-                ";
-            exit();
+        $courseService = new CourseService();
+        $course_title = strip_tags(trim($_POST['title']));
+        if (empty($course_title)){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: 'course_title'");
         }
-        if ($courseModel->deleteCourse($title_course)){
-            header("HTTP/1.1 200 OK");
+        try {
+            if ($courseService->deleteCourse($course_title)) {
+                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
+            }
+        }catch (CourseNotFoundException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        else{
-            header("HTTP/1.1 500 Internal Server Error", true, 500);
-            echo "
-                        \"errors\": [
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\" : \"/protected/controllers/CourseController/deleteCourseAction\"},
-                            \"title\": \"Internal error\",
-                            \"description\": \" Deleting course failed.\" 
-                        ]
-                    ";
-            exit();
+        catch (StatementExecutingException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", "Deleting course failed. " . $e->getMessage());
         }
     }
     
     public function updateCourseAction(){
-        $courseModel = new CourseModel();
+        $courseService = new CourseService();
         $data = [
             'id_course' => strip_tags(trim($_POST['id_course'])),
             'title' => strip_tags(trim($_POST['title'])),
@@ -133,32 +98,24 @@ class CourseController{
         ];
         foreach ($data as $key => $value){
             if (empty($value)){
-                header("HTTP/1.1 400 Bad Request", true, 400);
-                echo "
-                    \"errors\": [
-                        \"status\": \"400\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/CourseController/updateCourseAction\"},
-                        \"title\": \"Missing params\",
-                        \"description\": \" Missing param: `$key` !\" 
-                    ]
-                ";
-                exit();
+                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
             }
         }
-        if ($courseModel->updateCourse($data)){
-            header("HTTP/1.1 200 OK");
+        try {
+            if ($courseService->updateCourse($data)) {
+                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
+            }
+        }catch (CourseAlreadyExistsException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
-        else{
-            header("HTTP/1.1 500 Internal Server Error", true, 500);
-            echo "
-                        \"errors\": [
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\" : \"/protected/controllers/CourseController/updateCourseAction\"},
-                            \"title\": \"Internal error\",
-                            \"description\": \" Updating course failed.\" 
-                        ]
-                    ";
-            exit();
+        catch (CourseNotFoundException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        }
+        catch (StatementExecutingException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", "Updating course failed. " . $e->getMessage());
         }
     }
 }

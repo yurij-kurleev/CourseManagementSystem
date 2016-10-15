@@ -5,18 +5,7 @@ class UserModel{
     public function addUser(array $data){
         try{
             if($this->isRegistered($data['email'])){
-                header('HTTP/1.1 403 Forbidden', true, 403);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"403\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Collision\",
-                           \"detail\": \"User {$data['login']}:{$data['password']} already exists\"
-                        }
-                    ]
-                }";
-                exit();
+                throw new UserExistsException("User {$data['email']}:{$data['password']} already exists");
             }
             $connection = PDOConnection::getInstance()->getConnection();
             $sql = "INSERT INTO users(name, password, email, register_date, role)
@@ -24,33 +13,11 @@ class UserModel{
             $stmt = $connection->prepare($sql);
             $stmt->execute($data);
             if(!empty($stmt->errorInfo()[1])){
-                header('HTTP/1.1 500 Internal Server Error', true, 500);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
-                        }
-                    ]
-                }";
-                exit();
+                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             return true;
-        }catch(PDOException $e){
-            header('HTTP/1.1 500 Internal Server Error', true, 500);
-            echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"".$e->getMessage()."\"
-                        }
-                    ]
-                }";
-            exit();
+        } catch(PDOException $e){
+            throw $e;
         }
     }
     
@@ -62,34 +29,12 @@ class UserModel{
             $stmt->bindParam(1, $email, PDO::PARAM_STR);
             $stmt->execute();
             if(!empty($stmt->errorInfo()[1])){
-                header('HTTP/1.1 500 Internal Server Error', true, 500);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/isRegistered\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
-                        }
-                    ]
-                }";
-                exit();
+                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             return !empty($user['id_u']);
         } catch (PDOException $e){
-            header('HTTP/1.1 500 Internal Server Error', true, 500);
-            echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"".$e->getMessage()."\"
-                        }
-                    ]
-                }";
-            exit();
+            throw $e;
         }
     }
 
@@ -101,34 +46,12 @@ class UserModel{
             $stmt = $link->prepare($sql);
             $stmt->execute($data);
             if (!empty($stmt->errorInfo()[1])){
-                header("HTTP/1.1 500 Internal Server Error", true, 500);
-                echo "{
-                    \"errors\": [
-                        {
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\": \"/protected/models/UserModel/getUserByEmailPassword\" },
-                            \"title\": \"Internal error\",
-                            \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
-                        }
-                    ]
-                }";
-                exit();
+                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             return $user;
         }catch(PDOException $e){
-            header("HTTP/1.1 500 Internal Server Error", true, 500);
-            echo "{
-                    \"errors\": [
-                        {
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\": \"/protected/models/UserModel/getUserByEmailPassword\" },
-                            \"title\": \"Internal error\",
-                            \"detail\": \"Error ".$e->getMessage()."\"
-                        }
-                    ]
-                }";
-            exit();
+            throw $e;
         }
     }
 }

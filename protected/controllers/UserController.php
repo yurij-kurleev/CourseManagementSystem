@@ -1,7 +1,7 @@
 <?php
 class UserController{
     public function registerUserAction(){
-        $userModel = new UserModel();
+        $userService = new UserService();
         $data = [
             'name' => strip_tags(trim($_POST['name'])),
             'email' => strip_tags(trim($_POST['email'])),
@@ -11,66 +11,46 @@ class UserController{
         ];
         foreach ($data as $key=>$value){
             if(empty($value)){
-                header('HTTP/1.1 400 Bad Request', true, 400);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"400\",
-                           \"source\": { \"pointer\": \"/protected/controllers/UserController/registerUserAction\" },
-                           \"title\":  \"Missing params\",
-                           \"detail\": \"Missing param: `$key` !\"
-                        }
-                    ]
-                }";
-                exit();
+                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
             }
         }
-        if($userModel->addUser($data)){
-            mail($data['email'], "Course Management System",
-            "Congratulations".$data['name']."! You've been successfully registered. Have a nice day.");
-            header('HTTP/1.1 201 Created', true, 201);
+        try {
+            if ($userService->registerUser($data)) {
+                HTTPResponseBuilder::getInstance()->sendSuccessRespond(201);
+            }
+        }catch (UserExistsException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
+        }
+        catch (StatementExecutingException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
     }
 
     public function meAction(){
-        $userModel = new UserModel();
+        $userService = new UserService();
         $data = [
             'email' => strip_tags(trim($_POST['email'])),
             'password' => hash("sha256", strip_tags(trim($_POST['password'])))
         ];
         foreach ($data as $key=>$value){
             if (empty($value)){
-                header('HTTP/1.1 400 Bad Request', true, 400);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"400\",
-                           \"source\": { \"pointer\": \"/protected/controllers/UserController/meAction\" },
-                           \"title\":  \"Missing params\",
-                           \"detail\": \"Missing param: `$key` !\"
-                        }
-                    ]
-                }";
-                exit();
+                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
             }
         }
-        $userInfo = $userModel->getUserByEmailPassword($data);
-        if (empty($userInfo)){
-            header("HTTP/1.1 401 Unauthorized", true, 401);
-            echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"401\",
-                           \"source\": { \"pointer\": \"/protected/controllers/UserController/meAction\" },
-                           \"title\":  \"User unauthorized\",
-                           \"detail\": \"No such user or password is not correct!\"
-                        }
-                    ]
-                }";
-            exit();
-        }
-        else{
+        try {
+            $userInfo = $userService->authUser($data);
             FrontController::getInstance()->setBody(json_encode($userInfo));
+        } catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (StatementExecutingException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (AuthorizationException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(401, "User unauthorized", $e->getMessage());
         }
     }
 }

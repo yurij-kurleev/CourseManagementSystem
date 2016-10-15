@@ -4,8 +4,10 @@ function __autoload($class_name){
     //class directories
     $directories = array(
             $_SERVER['DOCUMENT_ROOT'].'/protected/controllers/',
+            $_SERVER['DOCUMENT_ROOT'].'/protected/services/',
             $_SERVER['DOCUMENT_ROOT'].'/protected/models/',
-            $_SERVER['DOCUMENT_ROOT'].'/protected/library/'
+            $_SERVER['DOCUMENT_ROOT'].'/protected/library/',
+            $_SERVER['DOCUMENT_ROOT'].'/protected/library/exceptions/'
         );
 
     foreach($directories as $directory){

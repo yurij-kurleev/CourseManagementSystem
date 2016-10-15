@@ -33,6 +33,7 @@ $sql = "CREATE TABLE IF NOT EXISTS courses
 (id_course INT(11) NOT NULL AUTO_INCREMENT,
 title VARCHAR(100) NOT NULL,
 description TEXT NOT NULL,
+date INT(11) NOT NULL,
 id_auth INT(11) NOT NULL,
 UNIQUE (title),
 PRIMARY KEY (id_course),
@@ -47,15 +48,16 @@ try{
     exit();
 }
 
-//lessons
+//lessons + добавить id_test
 $sql = "CREATE TABLE IF NOT EXISTS lessons
 (id_lesson INT(11) NOT NULL AUTO_INCREMENT,
 title VARCHAR(100) NOT NULL,
-content TEXT NOT NULL,
-id_lesson INT(11) NOT NULL,
+description TEXT NOT NULL,
+date INT(14) NOT NULL,
+id_c INT(11) NOT NULL,
 UNIQUE (title),
-PRIMARY KEY (id_lecture),
-FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
+PRIMARY KEY (id_lesson),
+FOREIGN KEY (id_c) REFERENCES courses(id_course)
 ON DELETE CASCADE
 ON UPDATE CASCADE)";
 try{
@@ -74,7 +76,9 @@ content TEXT NOT NULL,
 id_lesson INT(11) NOT NULL,
 UNIQUE (title),
 PRIMARY KEY (id_lecture),
-FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson))";
+FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
+ON DELETE CASCADE
+ON UPDATE CASCADE)";
 try{
     $link->exec($sql);
     print_r($link->errorInfo());
