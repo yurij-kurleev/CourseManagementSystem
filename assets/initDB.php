@@ -2,6 +2,15 @@
 include_once "settings.php";
 include_once $_SERVER['DOCUMENT_ROOT']."/protected/library/PDOConnection.php";
 
+try {
+    //localhost заменить на host!!!
+    $connect = new PDO("mysql:host=localhost", DB_USER, DB_PASSWORD);
+    $connect->exec("CREATE DATABASE IF NOT EXISTS `scms.com`");
+}catch (PDOException $e){
+    echo $e->getCode().": ".$e->getMessage();
+    exit();
+}
+
 //Connect
 try{
     $link = PDOConnection::getInstance()->getConnection();
@@ -48,18 +57,13 @@ try{
     exit();
 }
 
-//lessons + добавить id_test
+//lessons
 $sql = "CREATE TABLE IF NOT EXISTS lessons
 (id_lesson INT(11) NOT NULL AUTO_INCREMENT,
 title VARCHAR(100) NOT NULL,
-description TEXT NOT NULL,
 date INT(14) NOT NULL,
-id_c INT(11) NOT NULL,
 UNIQUE (title),
-PRIMARY KEY (id_lesson),
-FOREIGN KEY (id_c) REFERENCES courses(id_course)
-ON DELETE CASCADE
-ON UPDATE CASCADE)";
+PRIMARY KEY (id_lesson))";
 try{
     $link->exec($sql);
     print_r($link->errorInfo());
@@ -73,10 +77,67 @@ $sql = "CREATE TABLE IF NOT EXISTS lectures
 (id_lecture INT(11) NOT NULL AUTO_INCREMENT,
 title VARCHAR(100) NOT NULL,
 content TEXT NOT NULL,
+date INT(14) NOT NULL,
 id_lesson INT(11) NOT NULL,
 UNIQUE (title),
 PRIMARY KEY (id_lecture),
 FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
+ON DELETE CASCADE
+ON UPDATE CASCADE)";
+try{
+    $link->exec($sql);
+    print_r($link->errorInfo());
+}catch (PDOException $e){
+    echo $e->getCode(). ": " . $e->getMessage();
+    exit();
+}
+
+//tests
+$sql = "CREATE TABLE IF NOT EXISTS tests
+(id_test INT(11) NOT NULL AUTO_INCREMENT,
+mark DECIMAL(5,2) DEFAULT 0.0,
+date INT(14) NOT NULL,
+id_lesson INT(11) NOT NULL,
+PRIMARY KEY (id_test),
+FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
+ON DELETE CASCADE
+ON UPDATE CASCADE)";
+try{
+    $link->exec($sql);
+    print_r($link->errorInfo());
+}catch (PDOException $e){
+    echo $e->getCode(). ": " . $e->getMessage();
+    exit();
+}
+
+//questions
+$sql = "CREATE TABLE IF NOT EXISTS questions
+(id_question INT(11) NOT NULL AUTO_INCREMENT,
+question VARCHAR(350) NOT NULL,
+mark DECIMAL(5,2) DEFAULT 0.0,
+date INT(14) NOT NULL,
+id_lesson INT(11) NOT NULL,
+PRIMARY KEY (id_question),
+FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
+ON DELETE CASCADE
+ON UPDATE CASCADE)";
+try{
+    $link->exec($sql);
+    print_r($link->errorInfo());
+}catch (PDOException $e){
+    echo $e->getCode(). ": " . $e->getMessage();
+    exit();
+}
+
+//answers. Field is_correct point correct(1) or incorrect(0) the answer is.
+$sql = "CREATE TABLE IF NOT EXISTS answers
+(id_answer INT(11) NOT NULL AUTO_INCREMENT,
+answer VARCHAR(350) NOT NULL,
+date INT(14) NOT NULL,
+is_correct INT(5) NOT NULL,
+id_question INT(11) NOT NULL,
+PRIMARY KEY (id_answer),
+FOREIGN KEY (id_question) REFERENCES questions(id_question)
 ON DELETE CASCADE
 ON UPDATE CASCADE)";
 try{
