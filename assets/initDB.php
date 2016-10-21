@@ -62,8 +62,12 @@ $sql = "CREATE TABLE IF NOT EXISTS lessons
 (id_lesson INT(11) NOT NULL AUTO_INCREMENT,
 title VARCHAR(100) NOT NULL,
 date INT(14) NOT NULL,
+id_course INT(11) NOT NULL,
 UNIQUE (title),
-PRIMARY KEY (id_lesson))";
+PRIMARY KEY (id_lesson),
+FOREIGN KEY (id_course) REFERENCES courses(id_course)
+ON DELETE CASCADE
+ON UPDATE CASCADE)";
 try{
     $link->exec($sql);
     print_r($link->errorInfo());
