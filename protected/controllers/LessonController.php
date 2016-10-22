@@ -14,7 +14,7 @@ class LessonController{
         }
         try{
             if ($lessonService->addLesson($data)){
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(201);
+                http_response_code(201);
             }
         }catch (LessonAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
@@ -78,7 +78,7 @@ class LessonController{
         }
         try{
             if ($lessonService->deleteLesson($id_lesson)){
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
+                http_response_code(200);
             }
         }catch (LessonNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Not found", $e->getMessage());
@@ -104,7 +104,7 @@ class LessonController{
         }
         try {
             if ($lessonService->updateLesson($data)) {
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
+                http_response_code(200);
             }
         }catch (LessonAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());

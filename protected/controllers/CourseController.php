@@ -15,7 +15,7 @@ class CourseController{
         }
         try {
             if ($courseService->addCourse($data)) {
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(201);
+                http_response_code(201);
             }
         }catch (CourseAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
@@ -103,7 +103,7 @@ class CourseController{
         }
         try {
             if ($courseService->updateCourse($data)) {
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
+                http_response_code(200);
             }
         }catch (CourseAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());

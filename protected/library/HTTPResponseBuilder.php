@@ -21,10 +21,6 @@ class HTTPResponseBuilder{
         return '/' . implode('/', $path_parts) . '/' . $fc->getController() . '/' . $fc->getAction();
     }
 
-    public function sendSuccessRespond($code){
-        http_response_code($code);
-    }
-
     public function sendFailRespond($code, $title, $description){
         http_response_code($code);
         echo "

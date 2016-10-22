@@ -9,20 +9,10 @@ class LectureController{
         ];
         foreach ($data as $key => $value){
             if (empty($value)){
-                header("HTTP/1.1 400 Bad Request", true, 400);
-                echo "
-                    \"errors\": [
-                        \"status\": \"400\",
-                        \"source\": { \"pointer\" : \"/protected/controllers/LectureController/addLectureAction\"},
-                        \"title\": \"Missing params\",
-                        \"description\": \" Missing param: `$key` !\" 
-                    ]
-                ";
-                exit();
+                
             }
         }
         if ($lectureModel->addLecture($data)){
-            header("HTTP/1.1 201 Created", true, 201);
         }
     }
 }

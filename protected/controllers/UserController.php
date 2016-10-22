@@ -16,7 +16,7 @@ class UserController{
         }
         try {
             if ($userService->registerUser($data)) {
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(201);
+                http_response_code(201);
             }
         }catch (UserExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
