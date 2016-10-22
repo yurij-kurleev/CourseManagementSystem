@@ -1,4 +1,6 @@
 <?php
+include_once "UserModel.php";
+
 class CourseModel{
     public function addCourse(array $data){
         try {

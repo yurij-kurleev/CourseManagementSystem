@@ -2,15 +2,6 @@
 include_once "settings.php";
 include_once $_SERVER['DOCUMENT_ROOT']."/protected/library/PDOConnection.php";
 
-try {
-    //localhost заменить на host!!!
-    $connect = new PDO("mysql:host=localhost", DB_USER, DB_PASSWORD);
-    $connect->exec("CREATE DATABASE IF NOT EXISTS `scms.com`");
-}catch (PDOException $e){
-    echo $e->getCode().": ".$e->getMessage();
-    exit();
-}
-
 //Connect
 try{
     $link = PDOConnection::getInstance()->getConnection();
@@ -19,7 +10,7 @@ try{
     exit();
 }
 
-//User
+//users
 $sql = "CREATE TABLE IF NOT EXISTS users
 (id_u INT(11) NOT NULL AUTO_INCREMENT,
  name VARCHAR(75) NOT NULL,
@@ -31,7 +22,9 @@ $sql = "CREATE TABLE IF NOT EXISTS users
  UNIQUE (email))";
 try{
     $link->exec($sql);
-    print_r($link->errorInfo());
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
 }catch (PDOException $e){
     echo $e->getCode().": ".$e->getMessage();
     exit();
@@ -51,9 +44,11 @@ ON DELETE CASCADE
 ON UPDATE CASCADE)";
 try{
     $link->exec($sql);
-    print_r($link->errorInfo());
-}catch (PDOException $e){
-    echo $e->getCode().": ".$e->getMessage();
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
     exit();
 }
 
@@ -146,9 +141,11 @@ ON DELETE CASCADE
 ON UPDATE CASCADE)";
 try{
     $link->exec($sql);
-    print_r($link->errorInfo());
-}catch (PDOException $e){
-    echo $e->getCode(). ": " . $e->getMessage();
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
     exit();
 }
 
