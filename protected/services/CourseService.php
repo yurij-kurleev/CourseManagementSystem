@@ -36,4 +36,14 @@ class CourseService{
             return true;
         }
     }
+
+    public function checkCourseExistence($id_course){
+        $courseModel = new CourseModel();
+        if ($courseModel->isCourseCreated($id_course)){
+            return true;
+        }
+        else{
+            throw new CourseNotFoundException("Course with id: {$id_course} does not exists.");
+        }
+    }
 }
