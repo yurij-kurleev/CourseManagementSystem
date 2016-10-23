@@ -29,7 +29,7 @@ class LessonModel{
                 throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $lesson = $stmt->fetch(PDO::FETCH_ASSOC);
-            return !empty($lesson['id_lesson']);
+            return $lesson['id_lesson'];
         }catch (PDOException $e){
             throw $e;
         }

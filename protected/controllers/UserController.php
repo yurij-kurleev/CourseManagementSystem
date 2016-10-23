@@ -53,4 +53,12 @@ class UserController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(401, "User unauthorized", $e->getMessage());
         }
     }
+
+    public function deleteUserAction(){
+
+    }
+
+    public function updateUserAction(){
+        
+    }
 }

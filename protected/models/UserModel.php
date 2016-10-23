@@ -54,4 +54,8 @@ class UserModel{
             throw $e;
         }
     }
+
+    public function deleteUser($id_user){
+        
+    }
 }

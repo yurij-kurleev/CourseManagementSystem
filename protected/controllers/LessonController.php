@@ -2,11 +2,7 @@
 class LessonController{
     public function addLessonAction(){
         $lessonService = new LessonService();
-        $data = [
-            'title' => strip_tags(trim($_POST['title'])),
-            'date' => time(),
-            'id_course' => strip_tags(trim($_POST['id_course']))
-        ];
+        $data = json_decode(file_get_contents("php://input"),true);
         foreach ($data as $key=>$value){
             if (empty($value)){
                 HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
@@ -37,6 +33,12 @@ class LessonController{
             $courseService = new CourseService();
             if ($courseService->checkCourseExistence($id_course)){
                 $lessonList = $lessonService->getLessonsList($id_course);
+                for ($i = 0; $i < count($lessonList) ; $i++){
+                    //add test + lecture
+                    $lectureService = new LectureService();
+                    $lecture = $lectureService->getLecture($lessonList[$i]['id_lesson']);
+                    $lessonList[$i]['lecture'] = $lecture;
+                }
                 FrontController::getInstance()->setBody(json_encode($lessonList));
             }
         }catch (CourseNotFoundException $e){
