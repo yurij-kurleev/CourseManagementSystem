@@ -15,9 +15,8 @@ class UserController{
             }
         }
         try {
-            if ($userService->registerUser($data)) {
-                http_response_code(201);
-            }
+            $userService->registerUser($data);
+            http_response_code(201);
         }catch (UserExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
@@ -52,13 +51,5 @@ class UserController{
         catch (AuthorizationException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(401, "User unauthorized", $e->getMessage());
         }
-    }
-
-    public function deleteUserAction(){
-
-    }
-
-    public function updateUserAction(){
-        
     }
 }
