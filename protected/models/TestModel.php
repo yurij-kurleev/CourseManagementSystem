@@ -1,18 +1,12 @@
 <?php
-class TestModel{
+class TestModel extends Model{
     public function addTest(array $data){
-        try{
-            $link = PDOConnection::getInstance()->getConnection();
-            $sql = "INSERT INTO tests(mark, date, id_lesson) VALUES (:mark, :date, :id_lesson)";
-            $stmt = $link->prepare($sql);
-            $stmt->execute($data);
-            if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
-            }
-            return true;
-        }catch (PDOException $e){
-            throw $e;
-        }
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "INSERT INTO tests(mark, date, id_lesson) VALUES (:mark, :date, :id_lesson)";
+        $stmt = $link->prepare($sql);
+        $stmt->execute($data);
+        TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        return $this->getTestIdByLessonId($data['id_lesson']);
     }
 
     public function isTestCreated($id_test){
@@ -22,9 +16,7 @@ class TestModel{
             $stmt = $link->prepare($sql);
             $stmt->bindParam(1, $id_test, PDO::PARAM_INT);
             $stmt->execute();
-            if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
-            }
+            TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
             $test = $stmt->fetch(PDO::FETCH_ASSOC);
             return !empty($test['id_test']);
         }catch (PDOException $e){
@@ -32,21 +24,15 @@ class TestModel{
         }
     }
     
-    public function isTestExistByLessonId($id_lesson){
-        try{
-            $link = PDOConnection::getInstance()->getConnection();
-            $sql = "SELECT id_test FROM tests WHERE id_lesson = ?";
-            $stmt = $link->prepare($sql);
-            $stmt->bindParam(1, $id_lesson, PDO::PARAM_INT);
-            $stmt->execute();
-            if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
-            }
-            $test = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $test['id_test'];
-        }catch (PDOException $e){
-            throw $e;
-        }
+    public function getTestIdByLessonId($id_lesson){
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_test FROM tests WHERE id_lesson = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $id_lesson, PDO::PARAM_INT);
+        $stmt->execute();
+        TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $test = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $test['id_test'];
     }
 
     public function getTestByLessonId($id_lesson){
@@ -56,9 +42,7 @@ class TestModel{
             $stmt = $link->prepare($sql);
             $stmt->bindParam(1, $id_lesson, PDO::PARAM_INT);
             $stmt->execute();
-            if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
-            }
+            TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
             $test = $stmt->fetch(PDO::FETCH_ASSOC);
             return $test;
         }catch (PDOException $e){
@@ -74,9 +58,7 @@ class TestModel{
                 $stmt = $link->prepare($sql);
                 $stmt->bindParam(1, $id_test, PDO::PARAM_INT);
                 $stmt->execute();
-                if(!empty($stmt->errorInfo()[1])){
-                    throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
-                }
+                TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
                 return true;
             }
             else{
@@ -94,9 +76,7 @@ class TestModel{
                 $sql = "UPDATE tests SET mark = :mark WHERE id_test = :id_test";
                 $stmt = $link->prepare($sql);
                 $stmt->execute(array(':mark' => $data['mark'], ':id_test' => $data['id_test']));
-                if(!empty($stmt->errorInfo()[1])){
-                    throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
-                }
+                TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
                 return true;
             }
             else{

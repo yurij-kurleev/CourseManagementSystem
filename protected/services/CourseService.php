@@ -43,7 +43,7 @@ class CourseService{
             return true;
         }
         else{
-            throw new CourseNotFoundException("Course with id: {$id_course} does not exists.");
+            throw new EntityNotFoundException("Course with id: {$id_course} does not exists.");
         }
     }
 }

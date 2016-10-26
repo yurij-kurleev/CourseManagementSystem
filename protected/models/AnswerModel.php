@@ -1,19 +1,11 @@
 <?php
-class AnswerModel{
-    public function addAnswer(array $data, $is_correct){
-        try{
-            $link = PDOConnection::getInstance()->getConnection();
-            $sql = "INSERT INTO answers(answer, date, is_correct, id_question) VALUES (:answer, :date, :is_correct, :id_question)";
-            $stmt = $link->prepare($sql);
-            $stmt->execute(array(':answer' => $data['answer'], ':date' => $data['date'], ':is_correct' => $is_correct,
-                ':id_question' => $data['id_question']));
-            if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
-            }
-            return true;
-        }catch (PDOException $e){
-            throw $e;
-        }
+class AnswerModel extends Model{
+    public function addAnswer(array $data){
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "INSERT INTO answers(answer, date, is_correct, id_question) VALUES (:answer, :date, :is_correct, :id_question)";
+        $stmt = $link->prepare($sql);
+        $stmt->execute($data);
+        AnswerModel::checkErrorArrayEmptiness($stmt->errorInfo());
     }
 
     public function isAnswerCreated($id_answer){
@@ -24,7 +16,7 @@ class AnswerModel{
             $stmt->bindParam(1, $id_answer, PDO::PARAM_INT);
             $stmt->execute();
             if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $answer = $stmt->fetch(PDO::FETCH_ASSOC);
             return !empty($answer['id_answer']);
@@ -41,7 +33,7 @@ class AnswerModel{
             $stmt->bindParam(1, $id_question, PDO::PARAM_INT);
             $stmt->execute();
             if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $answersList = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $answersList;
@@ -59,7 +51,7 @@ class AnswerModel{
                 $stmt->bindParam(1, $id_answer, PDO::PARAM_INT);
                 $stmt->execute();
                 if(!empty($stmt->errorInfo()[1])){
-                    throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                    throw new StatementExecutionException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
                 }
                 return true;
             }
@@ -79,7 +71,7 @@ class AnswerModel{
                 $stmt = $link->prepare($sql);
                 $stmt->execute(array(':answer' => $data['answer'], ':id_answer' => $data['id_answer']));
                 if(!empty($stmt->errorInfo()[1])){
-                    throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                    throw new StatementExecutionException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
                 }
                 return true;
             }

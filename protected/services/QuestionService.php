@@ -1,40 +1,21 @@
 <?php
 class QuestionService{
-    public function addQuestion(array $data){
+    public function addQuestion(array $questionContent, $id_test){
         $questionModel = new QuestionModel();
         $questionData = [
-            'question' => $data['question'],
-            'points' => $data['points'],
-            'date' => $data['date'],
-            'id_test' => $data['id_test']
+            'question' => $questionContent['question'],
+            'points' => $questionContent['points'],
+            'date' => time(),
+            'id_test' => $id_test
         ];
-        if ($questionModel->addQuestion($questionData)){
-            $id_question = $questionModel->isQuestionExistsByTestId($data['id_test']);
-            if (!empty($id_question)){
-                $answerService = new AnswerService();
-                $correctAnswerData = [
-                    'answer' => $data['correct_answer'],
-                    'date' => time(),
-                    'id_question' => $id_question
-                ];
-                $answerService->addAnswer($correctAnswerData, 1);
-
-                $incorrectAnswers = $data['incorrect_answers'];
-                foreach ($incorrectAnswers as $incorrectAnswer){
-                    $incorrectAnswerData = [
-                        'answer' => $incorrectAnswer,
-                        'date' => time(),
-                        'id_question' => $id_question
-                    ];
-                    $answerService->addAnswer($incorrectAnswerData);
-                }
-                return true;
-            }
-            else{
-                return false;
+        $id_question = $questionModel->addQuestion($questionData);
+        if (!empty($id_question)) {
+            $answerService = new AnswerService();
+            $answerService->addAnswer($questionContent['correct_answer'], $id_question, 1);
+            foreach ($questionContent['incorrect_answers'] as $incorrectAnswer) {
+                $answerService->addAnswer($incorrectAnswer, $id_question);
             }
         }
-        return false;
     }
 
     public function getQuestionsList($id_test){

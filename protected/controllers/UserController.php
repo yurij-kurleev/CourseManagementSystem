@@ -21,7 +21,7 @@ class UserController{
         }catch (UserExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (PDOException $e){
@@ -46,7 +46,7 @@ class UserController{
         } catch (PDOException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (AuthorizationException $e){

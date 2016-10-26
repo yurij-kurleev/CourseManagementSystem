@@ -1,10 +1,10 @@
 <?php
 class LectureService{
-    public function addLecture(array $data){
+    public function addLecture(array $data, $id_lesson){
+        $data['date'] = time();
+        $data['id_lesson'] = $id_lesson;
         $lectureModel = new LectureModel();
-        if ($lectureModel->addLecture($data)){
-            return true;
-        }
+        $lectureModel->addLecture($data);
     }
 
     public function getLecture($id_lesson){

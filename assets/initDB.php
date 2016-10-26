@@ -83,7 +83,6 @@ title VARCHAR(100) NOT NULL,
 content TEXT NOT NULL,
 date INT(14) NOT NULL,
 id_lesson INT(11) NOT NULL,
-UNIQUE (title),
 PRIMARY KEY (id_lecture),
 FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
 ON DELETE CASCADE

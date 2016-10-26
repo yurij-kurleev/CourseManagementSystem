@@ -16,7 +16,7 @@ class AnswerController{
             if ($answerService->addAnswer($data)){
                 http_response_code(201);
             }
-        }catch (StatementExecutingException $e){
+        }catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){
@@ -33,7 +33,7 @@ class AnswerController{
         try{
             $answersList = $answerService->getQuestionsList($id_question);
             FrontController::getInstance()->setBody(json_encode($answersList));
-        }catch (StatementExecutingException $e){
+        }catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){
@@ -54,7 +54,7 @@ class AnswerController{
         }catch (AnswerNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){
@@ -80,7 +80,7 @@ class AnswerController{
         }catch (AnswerNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){

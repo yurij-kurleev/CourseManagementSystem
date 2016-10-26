@@ -13,7 +13,7 @@ class UserModel{
             $stmt = $connection->prepare($sql);
             $stmt->execute($data);
             if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             return true;
         } catch(PDOException $e){
@@ -29,7 +29,7 @@ class UserModel{
             $stmt->bindParam(1, $email, PDO::PARAM_STR);
             $stmt->execute();
             if(!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             return !empty($user['id_u']);
@@ -46,7 +46,7 @@ class UserModel{
             $stmt = $link->prepare($sql);
             $stmt->execute($data);
             if (!empty($stmt->errorInfo()[1])){
-                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             return $user;

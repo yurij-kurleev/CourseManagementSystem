@@ -1,10 +1,14 @@
 <?php
 class AnswerService{
-    public function addAnswer(array $data, $is_correct = 0){
+    public function addAnswer($answer, $id_question, $is_correct = 0){
+        $answerData = [
+            'answer' => $answer,
+            'date' => time(),
+            'is_correct' => $is_correct,
+            'id_question' => $id_question
+        ];
         $answerModel = new AnswerModel();
-        if ($answerModel->addAnswer($data, $is_correct)){
-            return true;
-        }
+        $answerModel->addAnswer($answerData);
     }
 
     public function getAnswersList($id_question){

@@ -17,10 +17,10 @@ class LectureController{
             if ($lectureService->addLecture($data)) {
                 http_response_code(201);
             }
-        }catch (LectureAlreadyExistsException $e){
+        }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){
@@ -37,7 +37,7 @@ class LectureController{
         try{
             $lecture = $lectureService->getLecture($id_lesson);
             FrontController::getInstance()->setBody(json_encode($lecture));
-        }catch (StatementExecutingException $e){
+        }catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){
@@ -58,7 +58,7 @@ class LectureController{
         }catch (LectureNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Mot found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){
@@ -88,7 +88,7 @@ class LectureController{
         catch (LectureNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){

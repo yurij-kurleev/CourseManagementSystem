@@ -10,7 +10,7 @@ class CourseModel{
             $stmt = $link->prepare($sql);
             $stmt->execute($data);
             if (!empty($stmt->errorInfo()[1])) {
-                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             return true;
         }catch (PDOException $e){
@@ -26,7 +26,7 @@ class CourseModel{
             $stmt->bindParam(1, $title, PDO::PARAM_STR);
             $stmt->execute();
             if (!empty($stmt->errorInfo()[1])) {
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $course = $stmt->fetch(PDO::FETCH_ASSOC);
             return !empty($course['id_course']);
@@ -43,7 +43,7 @@ class CourseModel{
             $stmt->bindParam(1, $id_course, PDO::PARAM_STR);
             $stmt->execute();
             if (!empty($stmt->errorInfo()[1])) {
-                throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $course = $stmt->fetch(PDO::FETCH_ASSOC);
             return !empty($course['id_course']);
@@ -61,7 +61,7 @@ class CourseModel{
                 $stmt->bindParam(1, $title, PDO::PARAM_STR);
                 $stmt->execute();
                 if (!empty($stmt->errorInfo()[1])) {
-                    throw new StatementExecutingException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                    throw new StatementExecutionException("Error " . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
                 }
                 $course = $stmt->fetch(PDO::FETCH_ASSOC);
                 return $course;
@@ -85,7 +85,7 @@ class CourseModel{
             $stmt->bindParam(1, $email_lecturer, PDO::PARAM_STR);
             $stmt->execute();
             if (!empty($stmt->errorInfo()[1])) {
-                throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
             }
             $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $courses;
@@ -103,7 +103,7 @@ class CourseModel{
                 $stmt->bindParam(1, $title, PDO::PARAM_STR);
                 $stmt->execute();
                 if (!empty($stmt->errorInfo()[1])) {
-                    throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                    throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
                 }
                 return true;
             }
@@ -124,7 +124,7 @@ class CourseModel{
                 $stmt->bindParam(1, $data['id_course'], PDO::PARAM_INT);
                 $stmt->execute();
                 if (!empty($stmt->errorInfo()[1])) {
-                    throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                    throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
                 }
                 $course = $stmt->fetch(PDO::FETCH_ASSOC);
                 if (!empty($course['id_course'])) {
@@ -132,7 +132,7 @@ class CourseModel{
                     $stmt = $link->prepare($sql);
                     $stmt->execute(array(':title' => $data['title'], 'description' => $data['description'], 'id_course' => $data['id_course']));
                     if (!empty($stmt->errorInfo()[1])) {
-                        throw new StatementExecutingException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
+                        throw new StatementExecutionException("Error" . $stmt->errorInfo()[0] . ": " . $stmt->errorInfo()[2]);
                     }
                     return true;
                 }

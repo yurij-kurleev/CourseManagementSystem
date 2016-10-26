@@ -1,30 +1,28 @@
 <?php
 class TestService{
-    public function addTest(array $data){
+    /**
+     * Forms testInfo and adds it into tests table in DB using testModel.
+     * Redirects data with question and answers to it into questionService.
+     * @param array $testContent - each element consists of question, points and 4 answers to question.
+     * @param $id_lesson - which lesson this test related with.
+     */
+    public function addTest(array $testContent, $id_lesson){
         $testMark = 0.0;
-        for($i = 0; $i < count($data['questions']); $i++){
-            $testMark += (float)$data['questions'][$i]['points'];
+        foreach ($testContent as $question){
+            $testMark += (float)$question['points'];
         }
-        $testData = [
+        $testInfo = [
             'mark' => $testMark,
-            'date' => $data['date'],
-            'id_lesson' => $data['id_lesson']
+            'date' => time(),
+            'id_lesson' => $id_lesson
         ];
         $testModel = new TestModel();
-        if ($testModel->addTest($testData)){
-            $id_test = $testModel->isTestExistByLessonId($data['id_lesson']);
-            if (!empty($id_test)){
-                $questionService = new QuestionService();
-                for($i = 0; $i < count($data['questions']); $i++){
-                    $data['questions'][$i]['date'] = time();
-                    $data['questions'][$i]['id_test'] = $id_test;
-                    $questionService->addQuestion($data['questions'][$i]);
-                }
-                return true;
+        $id_test = $testModel->addTest($testInfo);
+        if (!empty($id_test)) {
+            $questionService = new QuestionService();
+            foreach ($testContent as $question){
+                $questionService->addQuestion($question, $id_test);
             }
-        }
-        else{
-            return false;
         }
     }
 
