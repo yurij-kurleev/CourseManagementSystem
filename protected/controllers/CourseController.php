@@ -14,13 +14,12 @@ class CourseController{
             }
         }
         try {
-            if ($courseService->addCourse($data)) {
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(201);
-            }
-        }catch (CourseAlreadyExistsException $e){
+            $courseService->addCourse($data);
+            http_response_code(201);
+        }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (PDOException $e){
@@ -37,10 +36,10 @@ class CourseController{
         try {
             $course = $courseService->getCourse($course_title);
             FrontController::getInstance()->setBody(json_encode($course));
-        }catch (CourseNotFoundException $e){
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (PDOException $e){
@@ -57,10 +56,26 @@ class CourseController{
         try{
             $coursesList = $courseService->getCoursesList($email_lecturer);
             FrontController::getInstance()->setBody(json_encode($coursesList));
-        }catch (LecturerNotFoundException $e){
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+    }
+    
+    public function getAllCoursesListAction(){
+        $courseService = new CourseService();
+        try{
+            $allCoursesList = $courseService->getAllCoursesList();
+            FrontController::getInstance()->setBody(json_encode($allCoursesList));
+        }catch (EntityNotFoundException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        }
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (PDOException $e){
@@ -75,13 +90,12 @@ class CourseController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: 'course_title'");
         }
         try {
-            if ($courseService->deleteCourse($course_title)) {
+                $courseService->deleteCourse($course_title);
                 HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
-            }
-        }catch (CourseNotFoundException $e){
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (PDOException $e){
@@ -102,16 +116,15 @@ class CourseController{
             }
         }
         try {
-            if ($courseService->updateCourse($data)) {
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
-            }
-        }catch (CourseAlreadyExistsException $e){
+            $courseService->updateCourse($data);
+            http_response_code(200);
+        }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
-        catch (CourseNotFoundException $e){
+        catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (PDOException $e){

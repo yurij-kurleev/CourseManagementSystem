@@ -15,13 +15,12 @@ class UserController{
             }
         }
         try {
-            if ($userService->registerUser($data)) {
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(201);
-            }
+            $userService->registerUser($data);
+            http_response_code(201);
         }catch (UserExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (PDOException $e){
@@ -46,7 +45,7 @@ class UserController{
         } catch (PDOException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
-        catch (StatementExecutingException $e){
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
         catch (AuthorizationException $e){

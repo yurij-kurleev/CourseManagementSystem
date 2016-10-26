@@ -78,7 +78,6 @@ title VARCHAR(100) NOT NULL,
 content TEXT NOT NULL,
 date INT(14) NOT NULL,
 id_lesson INT(11) NOT NULL,
-UNIQUE (title),
 PRIMARY KEY (id_lecture),
 FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
 ON DELETE CASCADE
@@ -113,11 +112,11 @@ try{
 $sql = "CREATE TABLE IF NOT EXISTS questions
 (id_question INT(11) NOT NULL AUTO_INCREMENT,
 question VARCHAR(350) NOT NULL,
-mark DECIMAL(5,2) DEFAULT 0.0,
+points DECIMAL(5,2) DEFAULT 0.0,
 date INT(14) NOT NULL,
-id_lesson INT(11) NOT NULL,
+id_test INT(11) NOT NULL,
 PRIMARY KEY (id_question),
-FOREIGN KEY (id_lesson) REFERENCES lessons(id_lesson)
+FOREIGN KEY (id_test) REFERENCES tests(id_test)
 ON DELETE CASCADE
 ON UPDATE CASCADE)";
 try{
