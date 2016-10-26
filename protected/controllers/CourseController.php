@@ -90,8 +90,8 @@ class CourseController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: 'course_title'");
         }
         try {
-                $courseService->deleteCourse($course_title);
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
+            $courseService->deleteCourse($course_title);
+            HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }

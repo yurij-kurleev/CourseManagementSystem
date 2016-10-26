@@ -29,22 +29,29 @@ class TestService{
     public function getTest($id_lesson){
         $testModel = new TestModel();
         $test = $testModel->getTestByLessonId($id_lesson);
-        if (!empty($test) && !is_null($test)){
+        if (!empty($test)){
             return $test;
         }
+        else
+            throw new EntityNotFoundException("Test by id_lesson: {$id_lesson} was not found.");
     }
 
     public function deleteTest($id_test){
         $testModel = new TestModel();
-        if ($testModel->deleteTest($id_test)){
-            return true;
+        if ($this->isTestCreated($id_test)){
+            $testModel->deleteTest($id_test);
+        }
+        else{
+            throw new EntityNotFoundException("Test with id: {$id_test} does not exist.");
         }
     }
 
     public function updateTest(array $data){
         $testModel = new TestModel();
-        if ($testModel->updateTest($data)){
-            return true;
+        if ($this->isTestCreated($data['id_test'])){
+            $testModel->updateTest($data);
         }
+        else
+            throw new EntityNotFoundException("Test with id: {$data['id_test']} does not exist.");
     }
 }

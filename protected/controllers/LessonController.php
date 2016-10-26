@@ -77,9 +77,8 @@ class LessonController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `id_lesson`");
         }
         try{
-            if ($lessonService->deleteLesson($id_lesson)){
-                http_response_code(200);
-            }
+            $lessonService->deleteLesson($id_lesson);
+            http_response_code(200);
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Not found", $e->getMessage());
         }
@@ -103,9 +102,8 @@ class LessonController{
             }
         }
         try {
-            if ($lessonService->updateLesson($data)) {
-                http_response_code(200);
-            }
+            $lessonService->updateLesson($data);
+            http_response_code(200);
         }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
