@@ -55,4 +55,25 @@ class UserModel extends Model{
         $stmt->execute($data);
         UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
     }
+
+    public function unsubscribeFromCourse(array $data)
+    {
+        $connection = PDOConnection::getInstance()->getConnection();
+        $sql = "DELETE FROM subscriptions WHERE id_u = :id_u AND id_course = ?";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+    }
+
+    public function isSubscribed(array $data)
+    {
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_sub, id_u, id_course, date FROM subscriptions 
+                WHERE id_u = :id_u AND id_course = :id_course";
+        $stmt = $link->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $subscription = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $subscription;
+    }
 }

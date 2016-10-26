@@ -7,17 +7,24 @@ class CourseService{
         }
         $courseModel->addCourse($data);
     }
-    
-    public function getCourse($course_title){
+
+    public function getCourse(array $data)
+    {
         $courseModel = new CourseModel();
-        if ($courseModel->isCourseWithTitleExists($course_title)){
-            $course = $courseModel->getCourseByTitle($course_title);
+        $userModel = new UserModel();
+        if ($courseModel->isCourseWithTitleExists($data['course_title'])) {
+            $course = $courseModel->getCourseByTitle($data['course_title']);
             if(!empty($course)){
+                $course['is_subscribed'] = !empty(
+                $userModel->isSubscribed([
+                    'id_u' => $data['id_u'],
+                    'id_course' => $course['id_course']
+                ]));
                 return $course;
             }
         }
         else
-            throw new EntityNotFoundException("Course with title: " . $course_title . " was not found.");
+            throw new EntityNotFoundException("Course with title: " . $data['course_title'] . " was not found.");
     }
     
     public function getCoursesList($email_lecturer){

@@ -30,10 +30,9 @@ class UserService{
 
     public function subscribeOnCourse(array $data)
     {
-        $userModel = new UserModel();
-        $this->isUserExists($data['']);
-        $this->isCourseExists($data['']);
-        $userModel->subscribeOnCourse($data);
+        $this->isUserExists($data['id_u']);
+        $this->isCourseExists($data['id_course']);
+        $this->userModel->subscribeOnCourse($data);
     }
 
     protected function isUserExists($userId)
@@ -54,16 +53,8 @@ class UserService{
 
     public function unsubscribeFromCourse(array $data)
     {
-        $userModel = new UserModel();
-        $courseModel = new CourseModel();
-        $userInfo = $userModel->getUserById($data['id_user']);
-        $courseInfo = $courseModel->isCourseCreated($data['id_course']);
-        if (empty($userInfo)) {
-            throw new UserException("No such user with id: " . $data['id_user']);
-        }
-        if (!$courseInfo) {
-            throw new CourseException("No such course with id: " . $data['id_course']);
-        }
-        $userModel->subscribeOnCourse($data);
+        $this->isUserExists($data['id_u']);
+        $this->isCourseExists($data['id_course']);
+        $this->userModel->unsubscribeFromCourse($data);
     }
 }

@@ -29,12 +29,17 @@ class CourseController{
 
     public function getCourseAction(){
         $courseService = new CourseService();
-        $course_title = strip_tags(trim($_POST['title']));
-        if (empty($course_title)){
-            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: 'course_title'");
+        $data = [
+            'course_title' => strip_tags(trim($_POST['course_title'])),
+            'id_u' => strip_tags(trim($_POST['id_u']))
+        ];
+        foreach ($data as $key => $value) {
+            if (empty($value)) {
+                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
+            }
         }
         try {
-            $course = $courseService->getCourse($course_title);
+            $course = $courseService->getCourse($data);
             FrontController::getInstance()->setBody(json_encode($course));
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
