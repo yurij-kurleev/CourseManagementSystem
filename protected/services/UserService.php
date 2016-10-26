@@ -31,8 +31,8 @@ class UserService{
     public function subscribeOnCourse(array $data)
     {
         $userModel = new UserModel();
-        $this->isUserExists($data['']);
-        $this->isCourseExists($data['']);
+        $this->isUserExists($data['id_u']);
+        $this->isCourseExists($data['id_course']);
         $userModel->subscribeOnCourse($data);
     }
 

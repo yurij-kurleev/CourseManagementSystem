@@ -41,6 +41,16 @@ class CourseService{
         else
             throw new EntityNotFoundException("No courses in DB.");
     }
+
+    public function getUserSubscriptionsList($id_user){
+        $courseModel = new CourseModel();
+        $userSubscriptionList = $courseModel->getCoursesListByUserSubscription($id_user);
+        if (!empty($userSubscriptionList)){
+            return $userSubscriptionList;
+        }
+        else
+            throw new EntityNotFoundException("Courses which user with id: {$id_user} subscribed on was not found.");
+    }
     
     public function deleteCourse($course_title){
         $courseModel = new CourseModel();
