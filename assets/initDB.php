@@ -6,8 +6,8 @@ try {
     //localhost заменить на host!!!
     $connect = new PDO("mysql:host=localhost", DB_USER, DB_PASSWORD);
     $connect->exec("CREATE DATABASE IF NOT EXISTS `scms.com`");
-}catch (PDOException $e){
-    echo $e->getCode().": ".$e->getMessage();
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
     exit();
 }
 
@@ -19,7 +19,7 @@ try{
     exit();
 }
 
-//User
+//users
 $sql = "CREATE TABLE IF NOT EXISTS users
 (id_u INT(11) NOT NULL AUTO_INCREMENT,
  name VARCHAR(75) NOT NULL,
@@ -31,7 +31,9 @@ $sql = "CREATE TABLE IF NOT EXISTS users
  UNIQUE (email))";
 try{
     $link->exec($sql);
-    print_r($link->errorInfo());
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
 }catch (PDOException $e){
     echo $e->getCode().": ".$e->getMessage();
     exit();
@@ -51,9 +53,11 @@ ON DELETE CASCADE
 ON UPDATE CASCADE)";
 try{
     $link->exec($sql);
-    print_r($link->errorInfo());
-}catch (PDOException $e){
-    echo $e->getCode().": ".$e->getMessage();
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
     exit();
 }
 
@@ -145,9 +149,35 @@ ON DELETE CASCADE
 ON UPDATE CASCADE)";
 try{
     $link->exec($sql);
-    print_r($link->errorInfo());
-}catch (PDOException $e){
-    echo $e->getCode(). ": " . $e->getMessage();
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
+    exit();
+}
+
+//subscriptions
+$sql = "CREATE TABLE IF NOT EXISTS subscriptions
+(id_sub INT(11) NOT NULL AUTO_INCREMENT,
+id_u INT(11) NOT NULL,
+id_course INT(11) NOT NULL,
+date INT(11) NOT NULL,
+PRIMARY KEY (id_sub),
+FOREIGN KEY (id_u) REFERENCES users(id_u)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+FOREIGN KEY (id_course) REFERENCES courses(id_course)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+)";
+try {
+    $link->exec($sql);
+    if (!empty($link->errorInfo()[1])) {
+        print_r($link->errorInfo());
+    }
+} catch (PDOException $e) {
+    echo $e->getCode() . ": " . $e->getMessage();
     exit();
 }
 
