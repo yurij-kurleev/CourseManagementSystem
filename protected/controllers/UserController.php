@@ -52,4 +52,55 @@ class UserController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(401, "User unauthorized", $e->getMessage());
         }
     }
+
+    public function subscribeAction()
+    {
+        $userService = new UserService();
+        $data = [
+            'id_course' => strip_tags(trim($_POST['id_course'])),
+            'id_u' => strip_tags(trim($_POST['id_u']))
+        ];
+        foreach ($data as $key => $value) {
+            if (empty($value)) {
+                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
+            }
+        }
+        $data['date'] = time();
+        try {
+            $userService->subscribeOnCourse($data);
+        } catch (PDOException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        } catch (UserException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "User not found", $e->getMessage());
+        } catch (CourseException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Course not found", $e->getMessage());
+        } catch (StatementExecutionException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+    }
+
+    public function unsubscribeAction()
+    {
+        $userService = new UserService();
+        $data = [
+            'id_course' => strip_tags(trim($_POST['id_course'])),
+            'id_u' => strip_tags(trim($_POST['id_u']))
+        ];
+        foreach ($data as $key => $value) {
+            if (empty($value)) {
+                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
+            }
+        }
+        try {
+            $userService->unsubscribeFromCourse($data);
+        } catch (PDOException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        } catch (UserException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "User not found", $e->getMessage());
+        } catch (CourseException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Course not found", $e->getMessage());
+        } catch (StatementExecutionException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+    }
 }

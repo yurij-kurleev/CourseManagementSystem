@@ -32,4 +32,27 @@ class UserModel extends Model{
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         return $user;
     }
+
+    public function getUserById($id)
+    {
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_u, name, password, email, register_date, role FROM users 
+                WHERE id_u = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $id, PDO::PARAM_INT);
+        $stmt->execute();
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+
+    public function subscribeOnCourse(array $data)
+    {
+        $connection = PDOConnection::getInstance()->getConnection();
+        $sql = "INSERT INTO subscriptions(id_u, id_course, date)
+                VALUES(:id_u, :id_course, :date)";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+    }
 }
