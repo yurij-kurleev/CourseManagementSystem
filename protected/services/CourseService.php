@@ -31,6 +31,16 @@ class CourseService{
             return $coursesList;
         }
     }
+
+    public function getAllCoursesList(){
+        $courseModel = new CourseModel();
+        $allCoursesList = $courseModel->getAllCoursesList();
+        if (!empty($allCoursesList)){
+            return $allCoursesList;
+        }
+        else
+            throw new EntityNotFoundException("No courses in DB.");
+    }
     
     public function deleteCourse($course_title){
         $courseModel = new CourseModel();

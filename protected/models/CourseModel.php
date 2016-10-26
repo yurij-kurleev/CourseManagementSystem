@@ -82,6 +82,20 @@ class CourseModel extends Model{
     }
 
     /**
+     * Get all existing courses from DB.
+     * @return array
+     */
+    public function getAllCoursesList(){
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT * FROM courses";
+        $stmt = $link->prepare($sql);
+        $stmt->execute();
+        CourseModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $allCoursesList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $allCoursesList;
+    }
+
+    /**
      * Deletes course from DB by it id.
      * @param $title
      * @throws StatementExecutionException
