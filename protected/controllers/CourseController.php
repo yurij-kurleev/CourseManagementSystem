@@ -17,7 +17,7 @@ class CourseController{
             if ($courseService->addCourse($data)) {
                 http_response_code(201);
             }
-        }catch (CourseAlreadyExistsException $e){
+        }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
         catch (StatementExecutionException $e){
@@ -37,7 +37,7 @@ class CourseController{
         try {
             $course = $courseService->getCourse($course_title);
             FrontController::getInstance()->setBody(json_encode($course));
-        }catch (CourseNotFoundException $e){
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){
@@ -57,7 +57,7 @@ class CourseController{
         try{
             $coursesList = $courseService->getCoursesList($email_lecturer);
             FrontController::getInstance()->setBody(json_encode($coursesList));
-        }catch (LecturerNotFoundException $e){
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){
@@ -78,7 +78,7 @@ class CourseController{
             if ($courseService->deleteCourse($course_title)) {
                 HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
             }
-        }catch (CourseNotFoundException $e){
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){
@@ -105,10 +105,10 @@ class CourseController{
             if ($courseService->updateCourse($data)) {
                 http_response_code(200);
             }
-        }catch (CourseAlreadyExistsException $e){
+        }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }
-        catch (CourseNotFoundException $e){
+        catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){

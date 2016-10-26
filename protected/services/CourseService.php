@@ -2,20 +2,29 @@
 class CourseService{
     public function addCourse(array $data){
         $courseModel = new CourseModel();
-        if ($courseModel->addCourse($data)){
-            return true;
+        if ($courseModel->isCourseWithTitleExists($data['title'])){
+            throw new EntityAlreadyExistsException("Course {$data['title']} already exists.");
         }
+        $courseModel->addCourse($data);
     }
     
     public function getCourse($course_title){
         $courseModel = new CourseModel();
-        $course = $courseModel->getCourseByTitle($course_title);
-        if(!empty($course) && !is_null($course)){
-            return $course;
+        if ($courseModel->isCourseWithTitleExists($course_title)){
+            $course = $courseModel->getCourseByTitle($course_title);
+            if(!empty($course)){
+                return $course;
+            }
         }
+        else
+            throw new EntityNotFoundException("Course with title: " . $course_title . " was not found.");
     }
     
     public function getCoursesList($email_lecturer){
+        $userModel = new UserModel();
+        if (!$userModel->isRegistered($email_lecturer)){
+            throw new EntityNotFoundException("Lecturer with email: " . $email_lecturer . " was not found.");
+        }
         $courseModel = new CourseModel();
         $coursesList = $courseModel->getCoursesListByLecturerEmail($email_lecturer);
         if (!empty($coursesList) && !is_null($coursesList)){
@@ -25,18 +34,28 @@ class CourseService{
     
     public function deleteCourse($course_title){
         $courseModel = new CourseModel();
-        if ($courseModel->deleteCourse($course_title)){
-            return true;
+        if ($courseModel->isCourseWithTitleExists($course_title)){
+            $courseModel->deleteCourse($course_title);
         }
+        else
+            throw new EntityNotFoundException("Course with title: " . $course_title ." does not exist.");
     }
     
     public function updateCourse(array $data){
         $courseModel = new CourseModel();
-        if ($courseModel->updateCourse($data)){
-            return true;
+        if ($courseModel->isCourseCreated($data['id_course'])){
+            if (!($courseModel->isCourseWithTitleExists($data['title']))){
+                $courseModel->updateCourse($data);
+            }
+            else
+                throw new EntityAlreadyExistsException("Course with title: {$data['title']} already exists.");
+        }
+        else{
+            throw new EntityNotFoundException("Course with id: " . $data['id_course'] ." does not exist.");
         }
     }
 
+    //it must be deleted
     public function checkCourseExistence($id_course){
         $courseModel = new CourseModel();
         if ($courseModel->isCourseCreated($id_course)){
