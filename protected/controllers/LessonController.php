@@ -8,15 +8,6 @@ class LessonController{
     }
 
     public function addLessonAction(){
-        $lessonService = new LessonService(LessonModel::getInstance(),
-                             new LectureService(LectureModel::getInstance()),
-                             new CourseService(CourseModel::getInstance(), UserModel::getInstance()),
-                             new TestService(TestModel::getInstance(),
-                                 new QuestionService(QuestionModel::getInstance(),
-                                     new AnswerService(AnswerModel::getInstance())
-                                 )
-                             )
-                        );
         $data = json_decode(file_get_contents("php://input"), true);
         foreach ($data as $key=>$value){
             if (empty($value)){
@@ -38,15 +29,6 @@ class LessonController{
     }
 
     public function getLessonsListAction(){
-        $lessonService = new LessonService(LessonModel::getInstance(),
-            new LectureService(LectureModel::getInstance()),
-            new CourseService(CourseModel::getInstance(), UserModel::getInstance()),
-            new TestService(TestModel::getInstance(),
-                new QuestionService(QuestionModel::getInstance(),
-                    new AnswerService(AnswerModel::getInstance())
-                )
-            )
-        );
         $id_course = strip_tags(trim($_POST['id_course']));
         if (empty($id_course)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `id_course`");
@@ -66,15 +48,6 @@ class LessonController{
     }
     
     public function getLessonAction(){
-        $lessonService = new LessonService(LessonModel::getInstance(),
-            new LectureService(LectureModel::getInstance()),
-            new CourseService(CourseModel::getInstance(), UserModel::getInstance()),
-            new TestService(TestModel::getInstance(),
-                new QuestionService(QuestionModel::getInstance(),
-                    new AnswerService(AnswerModel::getInstance())
-                )
-            )
-        );
         $id_lesson = strip_tags(trim($_POST['id_lesson']));
         if (empty($id_lesson)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `id_lesson`");
