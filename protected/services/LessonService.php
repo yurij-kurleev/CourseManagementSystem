@@ -37,9 +37,12 @@ class LessonService{
         }
         $id_lesson = $this->lessonModel->addLesson($lessonData);
         if (!empty($id_lesson)) {
-            $this->lectureService->addLecture($data['lecture'], $id_lesson);
+            $data['lecture']['date'] = time();
+            $data['lecture']['id_lesson'] = $id_lesson;
+            $this->lectureService->addLecture($data['lecture']);
             if (!empty($data['test'])) {
-                $this->testService->addTest($data['test'], $id_lesson);
+                $data['test']['id_lesson'] = $id_lesson;
+                $this->testService->addTest($data['test']);
             }
         }
     }

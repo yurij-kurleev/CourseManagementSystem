@@ -22,22 +22,23 @@ class TestService{
      * Forms testInfo and adds it into tests table in DB using testModel.
      * Redirects data with question and answers to it into questionService.
      * @param array $testContent - each element consists of question, points and 4 answers to question.
-     * @param $id_lesson - which lesson this test related with.
      */
-    public function addTest(array $testContent, $id_lesson){
+    public function addTest(array $testContent){
         $testMark = 0.0;
-        foreach ($testContent as $question){
-            $testMark += (float)$question['points'];
+        for($i = 0; $i < count($testContent) - 1; $i++){
+            $testMark += $testContent[$i]['points'];
         }
         $testInfo = [
             'mark' => $testMark,
             'date' => time(),
-            'id_lesson' => $id_lesson
+            'id_lesson' => $testContent['id_lesson']
         ];
+        unset($testContent['id_lesson']);
         $id_test = $this->testModel->addTest($testInfo);
         if (!empty($id_test)) {
             foreach ($testContent as $question){
-                $this->questionService->addQuestion($question, $id_test);
+                $question['id_test'] = $id_test;
+                $this->questionService->addQuestion($question);
             }
         }
     }

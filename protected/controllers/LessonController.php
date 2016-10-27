@@ -9,11 +9,15 @@ class LessonController{
 
     public function addLessonAction(){
         $data = json_decode(file_get_contents("php://input"), true);
-        foreach ($data as $key=>$value){
-            if (empty($value)){
-                HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                if (empty($value)) {
+                    HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
+                }
             }
         }
+        else
+            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Data missed", "Lesson data is empty");
         try{
             $this->lessonService->addLesson($data);
             http_response_code(201);
