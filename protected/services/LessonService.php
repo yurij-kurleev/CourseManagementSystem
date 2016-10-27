@@ -32,7 +32,7 @@ class LessonService{
             'date' => time(),
             'id_course' => $data['id_course']
         ];
-        if ($this->lessonModel->getLessonIdByTitle(['title' => $data['title'], 'id_course' => $data['id_course']])) {
+        if ($this->lessonModel->getLessonIdByTitle(array('title' => $data['title'], 'id_course' => $data['id_course']))) {
             throw new EntityAlreadyExistsException("Lesson {$data['title']} already exists in course with id: {$data['id_course']}.");
         }
         $id_lesson = $this->lessonModel->addLesson($lessonData);

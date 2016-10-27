@@ -103,12 +103,4 @@ class CourseService{
             throw new EntityNotFoundException("Course with id: {$id_course} does not exists.");
         }
     }
-
-    /*protected function isCourseExists($courseId)
-    {
-        $courseInfo = $this->courseModel->isCourseCreated($courseId);
-        if (!$courseInfo) {
-            throw new CourseException("No such course with id: " . $courseId);
-        }
-    }*/
 }

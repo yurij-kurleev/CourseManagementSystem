@@ -20,14 +20,14 @@ class LessonModel extends Model{
         $stmt = $link->prepare($sql);
         $stmt->execute($data);
         LessonModel::checkErrorArrayEmptiness($stmt->errorInfo());
-        return $this->getLessonIdByTitle($data['title']);
+        return $this->getLessonIdByTitle(array($data['title'], $data['id_course']));
     }
 
     public function getLessonIdByTitle(array $data){
         $link = PDOConnection::getInstance()->getConnection();
         $sql = "SELECT id_lesson FROM lessons WHERE title = :title AND id_course = :id_course";
         $stmt = $link->prepare($sql);
-        $stmt->execute($data);
+        $stmt->execute(array(':title' => $data['title'], 'id_course' => $data['id_course']));
         LessonModel::checkErrorArrayEmptiness($stmt->errorInfo());
         $lesson = $stmt->fetch(PDO::FETCH_ASSOC);
         return $lesson['id_lesson'];
