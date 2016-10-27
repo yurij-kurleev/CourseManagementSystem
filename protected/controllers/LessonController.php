@@ -11,6 +11,9 @@ class LessonController{
         $data = json_decode(file_get_contents("php://input"), true);
         if (!empty($data)) {
             foreach ($data as $key => $value) {
+                if ($key == 'test'){
+                    continue;
+                }
                 if (empty($value)) {
                     HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `$key`");
                 }
@@ -40,6 +43,8 @@ class LessonController{
         try{
             $lessonList = $this->lessonService->getLessonsList($id_course);
             FrontController::getInstance()->setBody(json_encode($lessonList));
+        } catch (EmptyEntityException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }

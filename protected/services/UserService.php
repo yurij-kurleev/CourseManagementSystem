@@ -39,25 +39,15 @@ class UserService{
 
     public function subscribeOnCourse(array $data)
     {
-        $this->isUserExists($data['id_u']);
-        $this->isCourseExists($data['id_course']);
-        $this->userModel->subscribeOnCourse($data);
-    }
-
-    public function isUserExists($userId)
-    {
-        $userInfo = $this->userModel->getUserById($userId);
-        if (empty($userInfo)) {
-            throw new UserException("No such user with id: " . $userId);
+        if ($this->userModel->getUserById($data['id_u'])){
+            if ($this->courseModel->isCourseCreated($data['id_course'])){
+                $this->userModel->subscribeOnCourse($data);
+            }
+            else
+                throw new EntityNotFoundException("Course with id: {$data['id_course']} was not found.");
         }
-    }
-
-    protected function isCourseExists($courseId)
-    {
-        $courseInfo = $this->courseModel->isCourseCreated($courseId);
-        if (!$courseInfo) {
-            throw new CourseException("No such course with id: " . $courseId);
-        }
+        else
+            throw new EntityNotFoundException("User with id: {$data['id_u']} was not found.");
     }
 
     public function unsubscribeFromCourse(array $data)

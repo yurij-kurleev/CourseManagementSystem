@@ -23,12 +23,11 @@ class LessonModel extends Model{
         return $this->getLessonIdByTitle($data['title']);
     }
 
-    public function getLessonIdByTitle($title){
+    public function getLessonIdByTitle(array $data){
         $link = PDOConnection::getInstance()->getConnection();
-        $sql = "SELECT id_lesson FROM lessons WHERE title = ?";
+        $sql = "SELECT id_lesson FROM lessons WHERE title = :title AND id_course = :id_course";
         $stmt = $link->prepare($sql);
-        $stmt->bindParam(1, $title, PDO::PARAM_STR);
-        $stmt->execute();
+        $stmt->execute($data);
         LessonModel::checkErrorArrayEmptiness($stmt->errorInfo());
         $lesson = $stmt->fetch(PDO::FETCH_ASSOC);
         return $lesson['id_lesson'];

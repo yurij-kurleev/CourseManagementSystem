@@ -32,8 +32,8 @@ class LessonService{
             'date' => time(),
             'id_course' => $data['id_course']
         ];
-        if ($this->lessonModel->getLessonIdByTitle($data['title'])) {
-            throw new EntityAlreadyExistsException("Lesson {$data['title']} already exists.");
+        if ($this->lessonModel->getLessonIdByTitle(['title' => $data['title'], 'id_course' => $data['id_course']])) {
+            throw new EntityAlreadyExistsException("Lesson {$data['title']} already exists in course with id: {$data['id_course']}.");
         }
         $id_lesson = $this->lessonModel->addLesson($lessonData);
         if (!empty($id_lesson)) {
@@ -56,8 +56,7 @@ class LessonService{
                         $lecture = $this->lectureService->getLecture($lessonsList[$i]['id_lesson']);
                         $lessonsList[$i]['lecture'] = $lecture;
                     } catch (EntityNotFoundException $e) {
-                        throw new EmptyEntityException("Lesson with id: {$lessonsList[$i]['id_lesson']} 
-                                                    does not contain any lecture - lesson is empty.");
+                        throw new EmptyEntityException("Lesson with id: {$lessonsList[$i]['id_lesson']} does not contain any lecture - lesson is empty.");
                     }
                 }
                 return $lessonsList;
