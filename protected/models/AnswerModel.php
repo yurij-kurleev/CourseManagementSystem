@@ -1,5 +1,19 @@
 <?php
 class AnswerModel extends Model{
+    private static $instance = null;
+
+    protected function __construct()
+    {
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     public function addAnswer(array $data){
         $link = PDOConnection::getInstance()->getConnection();
         $sql = "INSERT INTO answers(answer, date, is_correct, id_question) VALUES (:answer, :date, :is_correct, :id_question)";

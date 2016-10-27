@@ -1,5 +1,19 @@
 <?php
 class CourseModel extends Model{
+    private static $instance = null;
+
+    protected function __construct()
+    {
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     /**
      * Adds new course in DB
      * @param array $data

@@ -3,10 +3,10 @@ class UserService{
     private $userModel;
     private $courseModel;
 
-    public function __construct()
+    public function __construct(UserModel $userModel, CourseModel $courseModel)
     {
-        $this->userModel = new UserModel();
-        $this->courseModel = new CourseModel();
+        $this->userModel = $userModel;
+        $this->courseModel = $courseModel;
     }
 
     public function registerUser(array $data){

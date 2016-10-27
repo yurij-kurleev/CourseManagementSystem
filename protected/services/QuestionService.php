@@ -1,30 +1,35 @@
 <?php
 class QuestionService{
+    private $questionModel;
+    private $answerService;
+
+    public function __construct(QuestionModel $questionModel, AnswerService $answerService)
+    {
+        $this->questionModel = $questionModel;
+        $this->answerService = $answerService;
+    }
+
     public function addQuestion(array $questionContent, $id_test){
-        $questionModel = new QuestionModel();
         $questionData = [
             'question' => $questionContent['question'],
             'points' => $questionContent['points'],
             'date' => time(),
             'id_test' => $id_test
         ];
-        $id_question = $questionModel->addQuestion($questionData);
+        $id_question = $this->questionModel->addQuestion($questionData);
         if (!empty($id_question)) {
-            $answerService = new AnswerService();
-            $answerService->addAnswer($questionContent['correct_answer'], $id_question, 1);
+            $this->answerService->addAnswer($questionContent['correct_answer'], $id_question, 1);
             foreach ($questionContent['incorrect_answers'] as $incorrectAnswer) {
-                $answerService->addAnswer($incorrectAnswer, $id_question);
+                $this->answerService->addAnswer($incorrectAnswer, $id_question);
             }
         }
     }
 
     public function getQuestionsList($id_test){
-        $questionModel = new QuestionModel();
-        $questionsList = $questionModel->getQuestionsListByTestId($id_test);
+        $questionsList = $this->questionModel->getQuestionsListByTestId($id_test);
         if (!empty($questionsList)){
             foreach ($questionsList as $questionListItem){
-                $answerService = new AnswerService();
-                $answersList = $answerService->getAnswersList($questionListItem['id_question']);
+                $answersList = $this->answerService->getAnswersList($questionListItem['id_question']);
                 $questionListItem['answers'] = $answersList;
             }
             return $questionsList;
@@ -34,9 +39,8 @@ class QuestionService{
     }
 
     public function deleteQuestion($id_question){
-        $questionModel = new QuestionModel();
-        if ($questionModel->isQuestionCreated($id_question)){
-            $questionModel->deleteQuestion($id_question);
+        if ($this->questionModel->isQuestionCreated($id_question)) {
+            $this->questionModel->deleteQuestion($id_question);
         }
         else{
             throw new EntityNotFoundException("Question with id: {$id_question} does not exist.");
@@ -44,9 +48,8 @@ class QuestionService{
     }
 
     public function updateQuestion(array $data){
-        $questionModel = new QuestionModel();
-        if ($this->isQuestionCreated($data['id_question'])){
-            $questionModel->updateQuestion($data);
+        if ($this->questionModel->isQuestionCreated($data['id_question'])) {
+            $this->questionModel->updateQuestion($data);
         }
         else{
             throw new EntityNotFoundException("Question with id: {$data['id_question']} does not exist.");

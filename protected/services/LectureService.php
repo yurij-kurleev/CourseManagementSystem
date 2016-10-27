@@ -1,18 +1,23 @@
 <?php
 class LectureService{
+    private $lectureModel;
+
+    public function __construct(LectureModel $lectureModel)
+    {
+        $this->lectureModel = $lectureModel;
+    }
+
     public function addLecture(array $data, $id_lesson){
         $data['date'] = time();
         $data['id_lesson'] = $id_lesson;
-        $lectureModel = new LectureModel();
-        if ($lectureModel->getLectureIdByTitle($data['title'])){
+        if ($this->lectureModel->getLectureIdByTitle($data['title'])) {
             throw new EntityAlreadyExistsException("Lecture with title: {$data['title']} already exists.");
         }
-        $lectureModel->addLecture($data);
+        $this->lectureModel->addLecture($data);
     }
 
     public function getLecture($id_lesson){
-        $lectureModel = new LectureModel();
-        $lecture = $lectureModel->getLectureByLessonId($id_lesson);
+        $lecture = $this->lectureModel->getLectureByLessonId($id_lesson);
         if (!empty($lecture)){
             return $lecture;
         }
@@ -21,9 +26,8 @@ class LectureService{
     }
     
     public function deleteLecture($id_lecture){
-        $lectureModel = new LectureModel();
-        if ($lectureModel->isLectureCreated($id_lecture)){
-            $lectureModel->deleteLecture($id_lecture);
+        if ($this->lectureModel->isLectureCreated($id_lecture)) {
+            $this->lectureModel->deleteLecture($id_lecture);
         }
         else{
             throw new EntityNotFoundException("Lecture with id: {$id_lecture} does not exist.");
@@ -31,10 +35,9 @@ class LectureService{
     }
     
     public function updateLecture(array $data){
-        $lectureModel = new LectureModel();
-        if ($lectureModel->isLectureCreated($data['id_lecture'])) {
-            if ($this->getLectureIdByTitle($data['title'])){
-                $lectureModel->updateLecture($data);
+        if ($this->lectureModel->isLectureCreated($data['id_lecture'])) {
+            if ($this->lectureModel->getLectureIdByTitle($data['title'])) {
+                $this->lectureModel->updateLecture($data);
             }
             else{
                 throw new EntityAlreadyExistsException("Lecture with title {$data['title']} already exists.");

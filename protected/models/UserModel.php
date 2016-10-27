@@ -2,6 +2,20 @@
 include $_SERVER['DOCUMENT_ROOT']."/assets/settings.php";
 
 class UserModel extends Model{
+    private static $instance = null;
+
+    protected function __construct()
+    {
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     public function addUser(array $data){
         $connection = PDOConnection::getInstance()->getConnection();
         $sql = "INSERT INTO users(name, password, email, register_date, role)

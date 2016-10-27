@@ -164,7 +164,7 @@ id_u INT(11) NOT NULL,
 id_course INT(11) NOT NULL,
 date INT(11) NOT NULL,
 PRIMARY KEY (id_sub),
-FOREIGN KEY (id_u) REFERENCES users(id_u)
+FOREIGN KEY (id_u) REFERENCES users(id_u),
 FOREIGN KEY (id_course) REFERENCES courses(id_course)
 ON DELETE CASCADE
 ON UPDATE CASCADE

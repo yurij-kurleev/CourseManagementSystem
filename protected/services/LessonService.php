@@ -1,36 +1,43 @@
 <?php
 class LessonService{
+    private $lessonModel;
+    private $lectureService;
+    private $courseService;
+    private $testService;
+
+    public function __construct(LessonModel $lessonModel, LectureService $lectureService, CourseService $courseService, TestService $testService)
+    {
+        $this->lessonModel = $lessonModel;
+        $this->lectureService = $lectureService;
+        $this->courseService = $courseService;
+        $this->testService = $testService;
+    }
+
     public function addLesson(array $data){
-        $lessonModel = new LessonModel();
         $lessonData = [
             'title' => $data['title'],
             'date' => time(),
             'id_course' => $data['id_course']
         ];
-        if ($lessonModel->getLessonIdByTitle($data['title'])){
+        if ($this->lessonModel->getLessonIdByTitle($data['title'])) {
             throw new EntityAlreadyExistsException("Lesson {$data['title']} already exists.");
         }
-        $id_lesson = $lessonModel->addLesson($lessonData);
+        $id_lesson = $this->lessonModel->addLesson($lessonData);
         if (!empty($id_lesson)) {
-            $lectureService = new LectureService();
-            $lectureService->addLecture($data['lecture'], $id_lesson);
+            $this->lectureService->addLecture($data['lecture'], $id_lesson);
             if (!empty($data['test'])) {
-                $testService = new TestService();
-                $testService->addTest($data['test'], $id_lesson);
+                $this->testService->addTest($data['test'], $id_lesson);
             }
         }
     }
 
     public function getLessonsList($id_course){
-        $lessonModel = new LessonModel();
-        $courseService = new CourseService();
-        if ($courseService->checkCourseExistence($id_course)) {
-            $lessonsList = $lessonModel->getLessonsListByCourseId($id_course);
+        if ($this->courseService->checkCourseExistence($id_course)) {
+            $lessonsList = $this->lessonModel->getLessonsListByCourseId($id_course);
             if (!empty($lessonsList)) {
                 for ($i = 0; $i < count($lessonsList); $i++){
                     try {
-                        $lectureService = new LectureService();
-                        $lecture = $lectureService->getLecture($lessonsList[$i]['id_lesson']);
+                        $lecture = $this->lectureService->getLecture($lessonsList[$i]['id_lesson']);
                         $lessonsList[$i]['lecture'] = $lecture;
                     } catch (EntityNotFoundException $e) {
                         throw new EmptyEntityException("Lesson with id: {$lessonsList[$i]['id_lesson']} 
@@ -45,20 +52,17 @@ class LessonService{
     }
     
     public function getLesson($id_lesson){
-        $lessonModel = new LessonModel();
-        $lesson = $lessonModel->getLessonById($id_lesson);
+        $lesson = $this->lessonModel->getLessonById($id_lesson);
         if (!empty($lesson)){
             try {
-                $lectureService = new LectureService();
-                $lecture = $lectureService->getLecture($lesson['id_lesson']);
+                $lecture = $this->lectureService->getLecture($lesson['id_lesson']);
                 $lesson['lecture'] = $lecture;
             }catch (EntityNotFoundException $e){
                 throw new EmptyEntityException("Lesson with id: {$lesson['id_lesson']} 
                                                 does not contain any lecture - lesson is empty.");
             }
             try {
-                $testService = new TestService();
-                $test = $testService->getTest($lesson['id_lesson']);
+                $test = $this->testService->getTest($lesson['id_lesson']);
                 $lesson['test'] = $test;
             }catch (EntityNotFoundException $e){
                 $lesson['test'] = '';
@@ -71,19 +75,17 @@ class LessonService{
     }
     
     public function deleteLesson($id_lesson){
-        $lessonModel = new LessonModel();
-        if ($lessonModel->isLessonCreated($id_lesson)) {
-           $lessonModel->deleteLesson($id_lesson);
+        if ($this->lessonModel->isLessonCreated($id_lesson)) {
+            $this->lessonModel->deleteLesson($id_lesson);
         }else{
             throw new EntityNotFoundException("Lesson with id: " . $id_lesson . "does not exists.");
         }
     }
 
     public function updateLesson(array $data){
-        $lessonModel = new LessonModel();
-        if ($lessonModel->isLessonCreated($data['id_lesson'])) {
-            if (!$lessonModel->getLessonIdByTitle($data['title'])) {
-                $lessonModel->updateLesson($data);
+        if ($this->lessonModel->isLessonCreated($data['id_lesson'])) {
+            if (!$this->lessonModel->getLessonIdByTitle($data['title'])) {
+                $this->lessonModel->updateLesson($data);
             }
             else{
                 throw new EntityAlreadyExistsException("Lesson with title: {$data['title']} already exists.");

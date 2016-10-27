@@ -1,5 +1,19 @@
 <?php
 class LectureModel extends Model{
+    private static $instance = null;
+
+    protected function __construct()
+    {
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     public function addLecture(array $data){
         $link = PDOConnection::getInstance()->getConnection();
         $sql = "INSERT INTO lectures(title, content, date, id_lesson) VALUES(:title, :content, :date, :id_lesson)";

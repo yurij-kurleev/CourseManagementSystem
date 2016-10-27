@@ -1,5 +1,19 @@
 <?php
 class TestModel extends Model{
+    private static $instance = null;
+
+    protected function __construct()
+    {
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     public function addTest(array $data){
         $link = PDOConnection::getInstance()->getConnection();
         $sql = "INSERT INTO tests(mark, date, id_lesson) VALUES (:mark, :date, :id_lesson)";
@@ -9,18 +23,8 @@ class TestModel extends Model{
         return $this->getTestIdByLessonId($data['id_lesson']);
     }
 
-    public function isTestCreated($id_test){
-        $link = PDOConnection::getInstance()->getConnection();
-        $sql = "SELECT id_test FROM tests WHERE id_test = ?";
-        $stmt = $link->prepare($sql);
-        $stmt->bindParam(1, $id_test, PDO::PARAM_INT);
-        $stmt->execute();
-        TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
-        $test = $stmt->fetch(PDO::FETCH_ASSOC);
-        return !empty($test['id_test']);
-    }
-    
-    public function getTestIdByLessonId($id_lesson){
+    public function getTestIdByLessonId($id_lesson)
+    {
         $link = PDOConnection::getInstance()->getConnection();
         $sql = "SELECT id_test FROM tests WHERE id_lesson = ?";
         $stmt = $link->prepare($sql);
@@ -29,6 +33,18 @@ class TestModel extends Model{
         TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
         $test = $stmt->fetch(PDO::FETCH_ASSOC);
         return $test['id_test'];
+    }
+
+    public function isTestCreated($id_test)
+    {
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_test FROM tests WHERE id_test = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $id_test, PDO::PARAM_INT);
+        $stmt->execute();
+        TestModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $test = $stmt->fetch(PDO::FETCH_ASSOC);
+        return !empty($test['id_test']);
     }
 
     public function getTestByLessonId($id_lesson){
