@@ -1,7 +1,13 @@
 <?php
 class UserController{
+    private $userService;
+
+    public function __construct()
+    {
+        $this->userService = UserService::getInstance();
+    }
+
     public function registerUserAction(){
-        $userService = new UserService();
         $data = [
             'name' => strip_tags(trim($_POST['name'])),
             'email' => strip_tags(trim($_POST['email'])),
@@ -15,7 +21,7 @@ class UserController{
             }
         }
         try {
-            $userService->registerUser($data);
+            $this->userService->registerUser($data);
             http_response_code(201);
         }catch (UserExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
@@ -29,7 +35,6 @@ class UserController{
     }
 
     public function meAction(){
-        $userService = new UserService();
         $data = [
             'email' => strip_tags(trim($_POST['email'])),
             'password' => hash("sha256", strip_tags(trim($_POST['password'])))
@@ -40,7 +45,7 @@ class UserController{
             }
         }
         try {
-            $userInfo = $userService->authUser($data);
+            $userInfo = $this->userService->authUser($data);
             FrontController::getInstance()->setBody(json_encode($userInfo));
         } catch (PDOException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
@@ -55,7 +60,6 @@ class UserController{
 
     public function subscribeAction()
     {
-        $userService = new UserService();
         $data = [
             'id_course' => strip_tags(trim($_POST['id_course'])),
             'id_u' => strip_tags(trim($_POST['id_u']))
@@ -67,7 +71,7 @@ class UserController{
         }
         $data['date'] = time();
         try {
-            $userService->subscribeOnCourse($data);
+            $this->userService->subscribeOnCourse($data);
         } catch (PDOException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         } catch (UserException $e) {
@@ -81,7 +85,6 @@ class UserController{
 
     public function unsubscribeAction()
     {
-        $userService = new UserService();
         $data = [
             'id_course' => strip_tags(trim($_POST['id_course'])),
             'id_u' => strip_tags(trim($_POST['id_u']))
@@ -92,7 +95,7 @@ class UserController{
             }
         }
         try {
-            $userService->unsubscribeFromCourse($data);
+            $this->userService->unsubscribeFromCourse($data);
         } catch (PDOException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         } catch (UserException $e) {

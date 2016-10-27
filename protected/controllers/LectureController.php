@@ -1,7 +1,13 @@
 <?php
 class LectureController{
+    private $lectureService;
+
+    public function __construct()
+    {
+        $this->lectureService = LectureService::getInstance();
+    }
+
     public function addLectureAction(){
-        $lectureService = new LectureService();
         $data = [
             'title' => strip_tags(trim($_POST['title'])),
             'content' => strip_tags(trim($_POST['content'])),
@@ -14,7 +20,7 @@ class LectureController{
             }
         }
         try {
-            $lectureService->addLecture($data);
+            $this->lectureService->addLecture($data);
             http_response_code(201);
         }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
@@ -28,13 +34,12 @@ class LectureController{
     }
     
     public function getLectureAction(){
-        $lectureService = new LectureService();
         $id_lesson = strip_tags(trim($_POST['id_lesson']));
         if (empty($id_lesson)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_lesson");
         }
         try{
-            $lecture = $lectureService->getLecture($id_lesson);
+            $lecture = $this->lectureService->getLecture($id_lesson);
             FrontController::getInstance()->setBody(json_encode($lecture));
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
@@ -48,13 +53,12 @@ class LectureController{
     }
     
     public function deleteLectureAction(){
-        $lectureService = new LectureService();
         $id_lecture = strip_tags(trim($_POST['id_lecture']));
         if (empty($id_lecture)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_lecture");
         }
         try{
-            $lectureService->deleteLecture($id_lecture);
+            $this->lectureService->deleteLecture($id_lecture);
             http_response_code(200);
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Mot found', $e->getMessage());
@@ -68,7 +72,6 @@ class LectureController{
     }
 
     public function updateLectureAction(){
-        $lectureService = new LectureService();
         $data = [
             'id_lecture' =>strip_tags(trim($_POST['id_lecture'])),
             'title' => strip_tags(trim($_POST['title'])),
@@ -80,7 +83,7 @@ class LectureController{
             }
         }
         try {
-            $lectureService->updateLecture($data);
+            $this->lectureService->updateLecture($data);
             http_response_code(200);
         }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, 'Collision', $e->getMessage());

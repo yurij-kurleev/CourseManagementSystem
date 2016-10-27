@@ -1,10 +1,19 @@
 <?php
 class LectureService{
+    private static $instance = null;
     private $lectureModel;
 
-    public function __construct(LectureModel $lectureModel)
+    protected function __construct(LectureModel $lectureModel)
     {
         $this->lectureModel = $lectureModel;
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self(LectureModel::getInstance());
+        }
+        return self::$instance;
     }
 
     public function addLecture(array $data, $id_lesson){

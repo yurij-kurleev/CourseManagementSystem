@@ -1,12 +1,21 @@
 <?php
 class QuestionService{
+    private static $instance = null;
     private $questionModel;
     private $answerService;
 
-    public function __construct(QuestionModel $questionModel, AnswerService $answerService)
+    protected function __construct(QuestionModel $questionModel, AnswerService $answerService)
     {
         $this->questionModel = $questionModel;
         $this->answerService = $answerService;
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self(QuestionModel::getInstance(), AnswerService::getInstance());
+        }
+        return self::$instance;
     }
 
     public function addQuestion(array $questionContent, $id_test){

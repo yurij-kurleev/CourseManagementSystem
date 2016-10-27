@@ -1,10 +1,19 @@
 <?php
 class AnswerService{
+    private static $instance = null;
     private $answerModel;
 
-    public function __construct(AnswerModel $answerModel)
+    protected function __construct(AnswerModel $answerModel)
     {
         $this->answerModel = $answerModel;
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self(AnswerModel::getInstance());
+        }
+        return self::$instance;
     }
 
     public function addAnswer($answer, $id_question, $is_correct = 0){

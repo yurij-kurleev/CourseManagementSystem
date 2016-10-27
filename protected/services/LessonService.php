@@ -1,16 +1,25 @@
 <?php
 class LessonService{
+    private static $instance = null;
     private $lessonModel;
     private $lectureService;
     private $courseService;
     private $testService;
 
-    public function __construct(LessonModel $lessonModel, LectureService $lectureService, CourseService $courseService, TestService $testService)
+    protected function __construct(LessonModel $lessonModel, LectureService $lectureService, CourseService $courseService, TestService $testService)
     {
         $this->lessonModel = $lessonModel;
         $this->lectureService = $lectureService;
         $this->courseService = $courseService;
         $this->testService = $testService;
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self(LessonModel::getInstance(), LectureService::getInstance(), CourseService::getInstance(), TestService::getInstance());
+        }
+        return self::$instance;
     }
 
     public function addLesson(array $data){

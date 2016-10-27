@@ -1,12 +1,21 @@
 <?php
 class TestService{
+    private static $instance = null;
     private $testModel;
     private $questionService;
 
-    public function __construct(TestModel $testModel, QuestionService $questionService)
+    protected function __construct(TestModel $testModel, QuestionService $questionService)
     {
         $this->testModel = $testModel;
         $this->questionService = $questionService;
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self(TestModel::getInstance(), QuestionService::getInstance());
+        }
+        return self::$instance;
     }
 
     /**

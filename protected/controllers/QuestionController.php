@@ -1,7 +1,13 @@
 <?php
 class QuestionController{
+    private $questionService;
+
+    public function __construct()
+    {
+        $this->questionService = QuestionService::getInstance();
+    }
+
     public function addQuestionAction(){
-        $questionService = new QuestionService();
         $data = [
             'question' => strip_tags(trim($_POST['question'])),
             'points' => strip_tags(trim($_POST['points'])),
@@ -14,7 +20,7 @@ class QuestionController{
             }
         }
         try{
-            $questionService->addQuestion($data);
+            $this->questionService->addQuestion($data);
             http_response_code(201);
         }catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
@@ -25,13 +31,12 @@ class QuestionController{
     }
     
     public function getQuestionsListAction(){
-        $questionService = new QuestionService();
         $id_test = strip_tags(trim($_POST['id_test']));
         if (empty($id_test)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_test");
         }
         try{
-            $questionsList = $questionService->getQuestionsList($id_test);
+            $questionsList = $this->questionService->getQuestionsList($id_test);
             FrontController::getInstance()->setBody(json_encode($questionsList));
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
@@ -45,13 +50,12 @@ class QuestionController{
     }
 
     public function deleteQuestionAction(){
-        $questionService = new QuestionService();
         $id_question = strip_tags(trim($_POST['id_question']));
         if (empty($id_question)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_test");
         }
         try{
-            $questionService->deleteQuestion($id_question);
+            $this->questionService->deleteQuestion($id_question);
             http_response_code(200);
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
@@ -65,7 +69,6 @@ class QuestionController{
     }
 
     public function updateQuestionAction(){
-        $questionService = new QuestionService();
         $data = [
             'id_question' => strip_tags(trim($_POST['id_question'])),
             'question' => strip_tags(trim($_POST['question'])),
@@ -77,7 +80,7 @@ class QuestionController{
             }
         }
         try{
-            $questionService->updateQuestion($data);
+            $this->questionService->updateQuestion($data);
             http_response_code(200);
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());

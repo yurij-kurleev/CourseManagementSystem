@@ -1,7 +1,13 @@
 <?php
 class TestController{
+    private $testService;
+
+    public function __construct()
+    {
+        $this->testService = TestService::getInstance();
+    }
+
     public function addTestAction(){
-        $testService = new TestService();
         $data = [
             'mark' => strip_tags(trim($_POST['mark'])),
             'date' => time(),
@@ -13,7 +19,7 @@ class TestController{
             }
         }
         try{
-            $testService->addTest($data);
+            $this->testService->addTest($data);
             http_response_code(201);
         }catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
@@ -24,13 +30,12 @@ class TestController{
     }
 
     public function getTestAction(){
-        $testService = new TestService();
         $id_lesson = strip_tags(trim($_POST['id_lesson']));
         if (empty($id_lesson)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_lesson");
         }
         try{
-            $test = $testService->getTest($id_lesson);
+            $test = $this->testService->getTest($id_lesson);
             FrontController::getInstance()->setBody(json_encode($test));
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
@@ -44,15 +49,14 @@ class TestController{
     }
 
     public function deleteTestAction(){
-        $testService = new TestService();
         $id_test = strip_tags(trim($_POST['id_test']));
         if (empty($id_test)){
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_test");
         }
         try{
-            $testService->deleteTest($id_test);
+            $this->testService->deleteTest($id_test);
             http_response_code(200);
-        }catch (TestNotFoundException $e){
+        } catch (EntityNotFoundException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){
@@ -64,7 +68,6 @@ class TestController{
     }
     
     public function updateTestAction(){
-        $testService = new TestService();
         $data = [
             'id_test' => strip_tags(trim($_POST['id_test'])),
             'mark' => strip_tags(trim($_POST['mark']))
@@ -75,9 +78,9 @@ class TestController{
             }
         }
         try{
-            $testService->updateTest($data);
+            $this->testService->updateTest($data);
             http_response_code(200);
-        }catch (TestNotFoundException $e){
+        } catch (EntityNotFoundException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){

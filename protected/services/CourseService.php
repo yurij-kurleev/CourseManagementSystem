@@ -1,12 +1,21 @@
 <?php
 class CourseService{
+    private static $instance = null;
     private $courseModel;
     private $userModel;
 
-    public function __construct(CourseModel $courseModel, UserModel $userModel)
+    protected function __construct(CourseModel $courseModel, UserModel $userModel)
     {
         $this->courseModel = $courseModel;
         $this->userModel = $userModel;
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self(CourseModel::getInstance(), UserModel::getInstance());
+        }
+        return self::$instance;
     }
 
     public function addCourse(array $data){
