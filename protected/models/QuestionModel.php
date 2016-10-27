@@ -22,9 +22,11 @@ class QuestionModel extends Model{
 
     public function getQuestionIdByTestId($id_test){
         $link = PDOConnection::getInstance()->getConnection();
-        $sql = "SELECT id_question FROM questions WHERE id_test = ?";
+        $sql = "SELECT id_question FROM questions WHERE id_test = ? 
+                AND id_question >= ALL( SELECT id_question FROM questions  WHERE id_test = ?)";
         $stmt = $link->prepare($sql);
         $stmt->bindParam(1, $id_test, PDO::PARAM_INT);
+        $stmt->bindParam(2, $id_test, PDO::PARAM_INT);
         $stmt->execute();
         QuestionModel::checkErrorArrayEmptiness($stmt->errorInfo());
         $question = $stmt->fetch(PDO::FETCH_ASSOC);

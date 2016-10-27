@@ -19,8 +19,8 @@ class TestService{
         $testModel = new TestModel();
         $id_test = $testModel->addTest($testInfo);
         if (!empty($id_test)) {
-            $questionService = new QuestionService();
             foreach ($testContent as $question){
+                $questionService = new QuestionService();
                 $questionService->addQuestion($question, $id_test);
             }
         }
@@ -30,6 +30,9 @@ class TestService{
         $testModel = new TestModel();
         $test = $testModel->getTestByLessonId($id_lesson);
         if (!empty($test)){
+            $questionService = new QuestionService();
+            $questionsList = $questionService->getQuestionsList($test['id_test']);
+            $test['questions'] = $questionsList;
             return $test;
         }
         else

@@ -19,7 +19,7 @@ class AnswerModel extends Model{
         return !empty($answer['id_answer']);
     }
 
-    public function getAnswerListByQuestionId($id_question){
+    public function getAnswersListByQuestionId($id_question){
         $link = PDOConnection::getInstance()->getConnection();
         $sql = "SELECT * FROM answers WHERE  id_question = ?";
         $stmt = $link->prepare($sql);

@@ -22,6 +22,11 @@ class QuestionService{
         $questionModel = new QuestionModel();
         $questionsList = $questionModel->getQuestionsListByTestId($id_test);
         if (!empty($questionsList)){
+            foreach ($questionsList as $questionListItem){
+                $answerService = new AnswerService();
+                $answersList = $answerService->getAnswersList($questionListItem['id_question']);
+                $questionListItem['answers'] = $answersList;
+            }
             return $questionsList;
         }
         else
