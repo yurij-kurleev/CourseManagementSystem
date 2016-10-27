@@ -74,10 +74,8 @@ class UserController{
             $this->userService->subscribeOnCourse($data);
         } catch (PDOException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
-        } catch (UserException $e) {
-            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "User not found", $e->getMessage());
-        } catch (CourseException $e) {
-            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Course not found", $e->getMessage());
+        } catch (EntityNotFoundException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Not found", $e->getMessage());
         } catch (StatementExecutionException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }
@@ -98,10 +96,8 @@ class UserController{
             $this->userService->unsubscribeFromCourse($data);
         } catch (PDOException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
-        } catch (UserException $e) {
+        } catch (EntityNotFoundException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, "User not found", $e->getMessage());
-        } catch (CourseException $e) {
-            HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Course not found", $e->getMessage());
         } catch (StatementExecutionException $e) {
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
         }

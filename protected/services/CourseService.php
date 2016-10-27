@@ -27,18 +27,21 @@ class CourseService{
 
     public function getCourse(array $data)
     {
-        if ($this->courseModel->isCourseWithTitleExists($data['course_title'])) {
-            $course = $this->courseModel->getCourseByTitle($data['course_title']);
-            if(!empty($course)){
-                $course['is_subscribed'] = $this->userModel->isSubscribed([
-                    'id_u' => $data['id_u'],
-                    'id_course' => $course['id_course']
-                ]);
-                return $course;
-            }
+        if ($this->userModel->getUserById($data['id_u'])) {
+            if ($this->courseModel->isCourseWithTitleExists($data['course_title'])) {
+                $course = $this->courseModel->getCourseByTitle($data['course_title']);
+                if (!empty($course)) {
+                    $course['is_subscribed'] = $this->userModel->isSubscribed([
+                        'id_u' => $data['id_u'],
+                        'id_course' => $course['id_course']
+                    ]);
+                    return $course;
+                }
+            } else
+                throw new EntityNotFoundException("Course with title: " . $data['course_title'] . " was not found.");
         }
         else
-            throw new EntityNotFoundException("Course with title: " . $data['course_title'] . " was not found.");
+            throw new EntityNotFoundException("User with id: " . $data['id_u'] . " was not found.");
     }
     
     public function getCoursesList($email_lecturer){
@@ -100,4 +103,12 @@ class CourseService{
             throw new EntityNotFoundException("Course with id: {$id_course} does not exists.");
         }
     }
+
+    /*protected function isCourseExists($courseId)
+    {
+        $courseInfo = $this->courseModel->isCourseCreated($courseId);
+        if (!$courseInfo) {
+            throw new CourseException("No such course with id: " . $courseId);
+        }
+    }*/
 }
