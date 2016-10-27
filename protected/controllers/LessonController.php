@@ -18,8 +18,6 @@ class LessonController{
         } else {
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Data missed", "Lesson data is empty");
         }
-        else
-            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Data missed", "Lesson data is empty");
         try{
             $this->lessonService->addLesson($data);
             http_response_code(201);
