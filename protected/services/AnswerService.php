@@ -14,22 +14,30 @@ class AnswerService{
     public function getAnswersList($id_question){
         $answerModel = new AnswerModel();
         $answersList = $answerModel->getAnswersListByQuestionId($id_question);
-        if (!empty($answersList) && !is_null($answersList)){
+        if (!empty($answersList)){
             return $answersList;
         }
+        else
+            throw new EntityNotFoundException("Answers list by id_question: {$id_question} were not found.");
     }
 
     public function deleteAnswer($id_answer){
         $answerModel = new AnswerModel();
-        if ($answerModel->deleteAnswer($id_answer)){
-            return true;
+        if ($answerModel->isAnswerCreated($id_answer)) {
+            $answerModel->deleteAnswer($id_answer);
+        }
+        else{
+            throw new EntityNotFoundException("Answer with id: {$id_answer} does not exist.");
         }
     }
 
     public function updateAnswer(array $data){
         $answerModel = new AnswerModel();
-        if ($answerModel->updateAnswer($data)){
-            return true;
+        if ($this->isAnswerCreated($data['id_answer'])) {
+            $answerModel->updateAnswer($data);
+        }
+        else{
+            throw new EntityNotFoundException("Answer with id: {$data['id_answer']} does not exist.");
         }
     }
 }

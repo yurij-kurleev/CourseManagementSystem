@@ -33,7 +33,7 @@ class LessonModel extends Model{
 
     public function getLessonsListByCourseId($id_course){
         $link = PDOConnection::getInstance()->getConnection();
-        $sql = "SELECT id_lesson, title, date FROM lessons WHERE id_course = ?";
+        $sql = "SELECT id_lesson, title FROM lessons WHERE id_course = ?";
         $stmt = $link->prepare($sql);
         $stmt->bindParam(1, $id_course, PDO::PARAM_INT);
         $stmt->execute();

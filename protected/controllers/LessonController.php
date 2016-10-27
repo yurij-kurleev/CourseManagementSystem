@@ -29,16 +29,8 @@ class LessonController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `id_course`");
         }
         try{
-            $courseService = new CourseService();
-            if ($courseService->checkCourseExistence($id_course)){
-                $lessonList = $lessonService->getLessonsList($id_course);
-                for ($i = 0; $i < count($lessonList) ; $i++){
-                    $lectureService = new LectureService();
-                    $lecture = $lectureService->getLecture($lessonList[$i]['id_lesson']);
-                    $lessonList[$i]['lecture'] = $lecture;
-                }
-                FrontController::getInstance()->setBody(json_encode($lessonList));
-            }
+            $lessonList = $lessonService->getLessonsList($id_course);
+            FrontController::getInstance()->setBody(json_encode($lessonList));
         }catch (CourseNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
@@ -59,7 +51,10 @@ class LessonController{
         try{
             $lesson = $lessonService->getLesson($id_lesson);
             FrontController::getInstance()->setBody(json_encode($lesson));
-        }catch (EntityNotFoundException $e){
+        }catch (EmptyEntityException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        }
+        catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){
@@ -77,9 +72,8 @@ class LessonController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: `id_lesson`");
         }
         try{
-            if ($lessonService->deleteLesson($id_lesson)){
-                http_response_code(200);
-            }
+            $lessonService->deleteLesson($id_lesson);
+            http_response_code(200);
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, "Not found", $e->getMessage());
         }
@@ -103,9 +97,8 @@ class LessonController{
             }
         }
         try {
-            if ($lessonService->updateLesson($data)) {
-                http_response_code(200);
-            }
+            $lessonService->updateLesson($data);
+            http_response_code(200);
         }catch (EntityAlreadyExistsException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(403, "Collision", $e->getMessage());
         }

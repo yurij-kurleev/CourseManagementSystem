@@ -88,6 +88,26 @@ class CourseController{
         }
     }
 
+    public function getUserSubscriptionsListAction(){
+        $courseService = new CourseService();
+        $id_user = strip_tags(trim($_POST['id_user']));
+        if (empty($id_user)){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_user");
+        }
+        try{
+            $userSubscriptionList = $courseService->getUserSubscriptionsList($id_user);
+            FrontController::getInstance()->setBody(json_encode($userSubscriptionList));
+        }catch (EntityNotFoundException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        }
+        catch (StatementExecutionException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+        catch (PDOException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, "Internal error", $e->getMessage());
+        }
+    }
+
     public function deleteCourseAction(){
         $courseService = new CourseService();
         $course_title = strip_tags(trim($_POST['title']));
@@ -95,8 +115,8 @@ class CourseController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: 'course_title'");
         }
         try {
-                $courseService->deleteCourse($course_title);
-                HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
+            $courseService->deleteCourse($course_title);
+            HTTPResponseBuilder::getInstance()->sendSuccessRespond(200);
         }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }

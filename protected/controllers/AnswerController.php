@@ -13,9 +13,8 @@ class AnswerController{
             }
         }
         try{
-            if ($answerService->addAnswer($data)){
-                http_response_code(201);
-            }
+            $answerService->addAnswer($data);
+            http_response_code(201);
         }catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
@@ -33,7 +32,10 @@ class AnswerController{
         try{
             $answersList = $answerService->getQuestionsList($id_question);
             FrontController::getInstance()->setBody(json_encode($answersList));
-        }catch (StatementExecutionException $e){
+        }catch (EntityNotFoundException $e){
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        }
+        catch (StatementExecutionException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
         catch (PDOException $e){
@@ -48,10 +50,9 @@ class AnswerController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_test");
         }
         try{
-            if ($answerService->deleteAnswer($id_answer)){
-                http_response_code(200);
-            }
-        }catch (AnswerNotFoundException $e){
+            $answerService->deleteAnswer($id_answer);
+            http_response_code(200);
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){
@@ -74,10 +75,9 @@ class AnswerController{
             }
         }
         try{
-            if ($answerService->updateAnswer($data)){
-                http_response_code(200);
-            }
-        }catch (AnswerNotFoundException $e){
+            $answerService->updateAnswer($data);
+            http_response_code(200);
+        }catch (EntityNotFoundException $e){
             HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
         }
         catch (StatementExecutionException $e){

@@ -82,6 +82,25 @@ class CourseModel extends Model{
     }
 
     /**
+     * Gets list of courses which user subscribed on.
+     * @param $id_user
+     * @return array
+     * @throws StatementExecutionException
+     */
+    public function getCoursesListByUserSubscription($id_user){
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT * FROM courses LEFT JOIN subscriptions 
+                ON courses.id_course = subscriptions.id_course
+                WHERE id_u = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $id_user, PDO::PARAM_INT);
+        $stmt->execute();
+        CourseModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $courses;
+    }
+
+    /**
      * Get all existing courses from DB.
      * @return array
      */
