@@ -16,13 +16,7 @@ class AnswerService{
         return self::$instance;
     }
 
-    public function addAnswer($answer, $id_question, $is_correct = 0){
-        $answerData = [
-            'answer' => $answer,
-            'date' => time(),
-            'is_correct' => $is_correct,
-            'id_question' => $id_question
-        ];
+    public function addAnswer($answerData){
         $this->answerModel->addAnswer($answerData);
     }
 

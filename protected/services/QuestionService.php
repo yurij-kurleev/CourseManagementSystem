@@ -27,9 +27,17 @@ class QuestionService{
         ];
         $id_question = $this->questionModel->addQuestion($questionData);
         if (!empty($id_question)) {
-            $this->answerService->addAnswer($questionContent['correct_answer'], $id_question, 1);
+            $answerData = [
+                'answer' => $questionContent['correct_answer'],
+                'date' => time(),
+                'is_correct' => 1,
+                'id_question' => $id_question
+            ];
+            $this->answerService->addAnswer($answerData);
             foreach ($questionContent['incorrect_answers'] as $incorrectAnswer) {
-                $this->answerService->addAnswer($incorrectAnswer, $id_question);
+                $answerData['answer'] = $incorrectAnswer;
+                $answerData['date'] = time();
+                $this->answerService->addAnswer($answerData);
             }
         }
     }

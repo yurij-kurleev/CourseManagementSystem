@@ -44,7 +44,7 @@ class UserService{
         $this->userModel->subscribeOnCourse($data);
     }
 
-    protected function isUserExists($userId)
+    public function isUserExists($userId)
     {
         $userInfo = $this->userModel->getUserById($userId);
         if (empty($userInfo)) {

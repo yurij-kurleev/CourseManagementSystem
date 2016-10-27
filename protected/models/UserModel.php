@@ -88,6 +88,6 @@ class UserModel extends Model{
         $stmt->execute($data);
         UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
         $subscription = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $subscription;
+        return !empty($subscription);
     }
 }
