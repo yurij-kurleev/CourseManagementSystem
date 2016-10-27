@@ -16,9 +16,7 @@ class LectureService{
         return self::$instance;
     }
 
-    public function addLecture(array $data, $id_lesson){
-        $data['date'] = time();
-        $data['id_lesson'] = $id_lesson;
+    public function addLecture(array $data){
         if ($this->lectureModel->getLectureIdByTitle($data['title'])) {
             throw new EntityAlreadyExistsException("Lecture with title: {$data['title']} already exists.");
         }

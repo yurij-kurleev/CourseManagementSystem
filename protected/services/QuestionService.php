@@ -18,12 +18,12 @@ class QuestionService{
         return self::$instance;
     }
 
-    public function addQuestion(array $questionContent, $id_test){
+    public function addQuestion(array $questionContent){
         $questionData = [
             'question' => $questionContent['question'],
             'points' => $questionContent['points'],
             'date' => time(),
-            'id_test' => $id_test
+            'id_test' => $questionContent['id_test']
         ];
         $id_question = $this->questionModel->addQuestion($questionData);
         if (!empty($id_question)) {
