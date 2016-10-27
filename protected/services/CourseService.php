@@ -21,11 +21,10 @@ class CourseService{
         if ($this->courseModel->isCourseWithTitleExists($data['course_title'])) {
             $course = $this->courseModel->getCourseByTitle($data['course_title']);
             if(!empty($course)){
-                $course['is_subscribed'] = !empty(
-                $this->userModel->isSubscribed([
+                $course['is_subscribed'] = $this->userModel->isSubscribed([
                     'id_u' => $data['id_u'],
                     'id_course' => $course['id_course']
-                ]));
+                ]);
                 return $course;
             }
         }
@@ -41,6 +40,8 @@ class CourseService{
         if (!empty($coursesList)) {
             return $coursesList;
         }
+        else
+            throw new EntityNotFoundException("Courses list by email: {$email_lecturer} was not found.");
     }
 
     public function getAllCoursesList(){
@@ -81,8 +82,7 @@ class CourseService{
             throw new EntityNotFoundException("Course with id: " . $data['id_course'] ." does not exist.");
         }
     }
-
-    //it must be deleted
+    
     public function checkCourseExistence($id_course){
         if ($this->courseModel->isCourseCreated($id_course)) {
             return true;

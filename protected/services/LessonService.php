@@ -12,6 +12,10 @@ class LessonService{
         $this->courseService = $courseService;
         $this->testService = $testService;
     }
+    
+    public function initLessonService(){
+        
+    }
 
     public function addLesson(array $data){
         $lessonData = [
