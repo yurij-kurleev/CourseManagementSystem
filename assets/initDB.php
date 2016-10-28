@@ -67,7 +67,6 @@ $sql = "CREATE TABLE IF NOT EXISTS lessons
 title VARCHAR(100) NOT NULL,
 date INT(14) NOT NULL,
 id_course INT(11) NOT NULL,
-UNIQUE (title),
 PRIMARY KEY (id_lesson),
 FOREIGN KEY (id_course) REFERENCES courses(id_course)
 ON DELETE CASCADE

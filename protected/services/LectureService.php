@@ -17,9 +17,11 @@ class LectureService{
     }
 
     public function addLecture(array $data){
+        /*
         if ($this->lectureModel->getLectureIdByTitle($data['title'])) {
             throw new EntityAlreadyExistsException("Lecture with title: {$data['title']} already exists.");
         }
+        */
         $this->lectureModel->addLecture($data);
     }
 

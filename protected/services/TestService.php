@@ -24,9 +24,14 @@ class TestService{
      * @param array $testContent - each element consists of question, points and 4 answers to question.
      */
     public function addTest(array $testContent){
+        foreach ($testContent as $question) {
+
+        }
         $testMark = 0.0;
         for($i = 0; $i < count($testContent) - 1; $i++){
-            $testMark += $testContent[$i]['points'];
+            if (!empty($testContent[$i]['points'])) {
+                $testMark += $testContent[$i]['points'];
+            }
         }
         $testInfo = [
             'mark' => $testMark,
@@ -69,5 +74,17 @@ class TestService{
         }
         else
             throw new EntityNotFoundException("Test with id: {$data['id_test']} does not exist.");
+    }
+
+    public function checkTestsEmptyness(array $data)
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $this->checkTestsEmptyness($value);
+            }
+            if (empty($value)) {
+                //throw new TestException("Empty ".$key."field");
+            }
+        }
     }
 }

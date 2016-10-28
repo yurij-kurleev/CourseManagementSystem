@@ -3,13 +3,11 @@ class CourseService{
     private static $instance = null;
     private $courseModel;
     private $userModel;
-
     protected function __construct(CourseModel $courseModel, UserModel $userModel)
     {
         $this->courseModel = $courseModel;
         $this->userModel = $userModel;
     }
-
     public static function getInstance()
     {
         if (is_null(self::$instance)) {
@@ -17,14 +15,12 @@ class CourseService{
         }
         return self::$instance;
     }
-
     public function addCourse(array $data){
         if ($this->courseModel->isCourseWithTitleExists($data['title'])) {
             throw new EntityAlreadyExistsException("Course {$data['title']} already exists.");
         }
         $this->courseModel->addCourse($data);
     }
-
     public function getCourse(array $data)
     {
         if ($this->userModel->getUserById($data['id_u'])) {
@@ -43,7 +39,7 @@ class CourseService{
         else
             throw new EntityNotFoundException("User with id: " . $data['id_u'] . " was not found.");
     }
-    
+
     public function getCoursesList($email_lecturer){
         if (!$this->userModel->isRegistered($email_lecturer)) {
             throw new EntityNotFoundException("Lecturer with email: " . $email_lecturer . " was not found.");
@@ -55,7 +51,6 @@ class CourseService{
         else
             throw new EntityNotFoundException("Courses list by email: {$email_lecturer} was not found.");
     }
-
     public function getAllCoursesList(){
         $allCoursesList = $this->courseModel->getAllCoursesList();
         if (!empty($allCoursesList)){
@@ -64,7 +59,6 @@ class CourseService{
         else
             throw new EntityNotFoundException("No courses in DB.");
     }
-
     public function getUserSubscriptionsList($id_user){
         $userSubscriptionList = $this->courseModel->getCoursesListByUserSubscription($id_user);
         if (!empty($userSubscriptionList)){
@@ -73,7 +67,7 @@ class CourseService{
         else
             throw new EntityNotFoundException("Courses which user with id: {$id_user} subscribed on was not found.");
     }
-    
+
     public function deleteCourse($course_title){
         if ($this->courseModel->isCourseWithTitleExists($course_title)) {
             $this->courseModel->deleteCourse($course_title);
@@ -81,7 +75,7 @@ class CourseService{
         else
             throw new EntityNotFoundException("Course with title: " . $course_title ." does not exist.");
     }
-    
+
     public function updateCourse(array $data){
         if ($this->courseModel->isCourseCreated($data['id_course'])) {
             if (!($this->courseModel->isCourseWithTitleExists($data['title']))) {
@@ -94,7 +88,7 @@ class CourseService{
             throw new EntityNotFoundException("Course with id: " . $data['id_course'] ." does not exist.");
         }
     }
-    
+
     public function checkCourseExistence($id_course){
         if ($this->courseModel->isCourseCreated($id_course)) {
             return true;
@@ -103,12 +97,4 @@ class CourseService{
             throw new EntityNotFoundException("Course with id: {$id_course} does not exists.");
         }
     }
-
-    /*protected function isCourseExists($courseId)
-    {
-        $courseInfo = $this->courseModel->isCourseCreated($courseId);
-        if (!$courseInfo) {
-            throw new CourseException("No such course with id: " . $courseId);
-        }
-    }*/
 }
