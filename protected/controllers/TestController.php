@@ -90,4 +90,11 @@ class TestController{
             HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
         }
     }
+
+    public function estimateAction()
+    {
+        /*
+         * id_answer
+         * */
+    }
 }

@@ -52,8 +52,12 @@ class UserService{
 
     public function unsubscribeFromCourse(array $data)
     {
-        $this->isUserExists($data['id_u']);
-        $this->isCourseExists($data['id_course']);
-        $this->userModel->unsubscribeFromCourse($data);
+        if ($this->userModel->getUserById($data['id_u'])) {
+            if ($this->courseModel->isCourseCreated($data['id_course'])) {
+                $this->userModel->unsubscribeFromCourse($data);
+            } else
+                throw new EntityNotFoundException("Course with id: {$data['id_course']} was not found.");
+        } else
+            throw new EntityNotFoundException("User with id: {$data['id_u']} was not found.");
     }
 }
