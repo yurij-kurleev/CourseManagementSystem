@@ -37,6 +37,7 @@ class QuestionService{
             foreach ($questionContent['incorrect_answers'] as $incorrectAnswer) {
                 $answerData['answer'] = $incorrectAnswer;
                 $answerData['date'] = time();
+                $answerData['is_correct'] = 0;
                 $this->answerService->addAnswer($answerData);
             }
         }
