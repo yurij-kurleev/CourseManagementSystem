@@ -20,14 +20,15 @@ class LectureModel extends Model{
         $stmt = $link->prepare($sql);
         $stmt->execute($data);
         LectureModel::checkErrorArrayEmptiness($stmt->errorInfo());
-        return $this->getLectureIdByTitle($data['title']);
+        return $this->getLectureIdByTitle($data);
     }
 
-    public function getLectureIdByTitle($title){
+    public function getLectureIdByTitle(array $data){
         $link = PDOConnection::getInstance()->getConnection();
-        $sql = "SELECT id_lecture FROM lectures WHERE title = ?";
+        $sql = "SELECT id_lecture FROM lectures WHERE title = ? AND id_lesson = ?";
         $stmt = $link->prepare($sql);
-        $stmt->bindParam(1, $title, PDO::PARAM_STR);
+        $stmt->bindParam(1, $data['title'], PDO::PARAM_STR);
+        $stmt->bindParam(2, $data['id_lesson'], PDO::PARAM_STR);
         $stmt->execute();
         LectureModel::checkErrorArrayEmptiness($stmt->errorInfo());
         $lecture = $stmt->fetch(PDO::FETCH_ASSOC);

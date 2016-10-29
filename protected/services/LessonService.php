@@ -5,12 +5,17 @@ class LessonService{
     private $lectureService;
     private $courseService;
     private $testService;
+
     protected function __construct(LessonModel $lessonModel, LectureService $lectureService, CourseService $courseService, TestService $testService)
     {
         $this->lessonModel = $lessonModel;
         $this->lectureService = $lectureService;
         $this->courseService = $courseService;
         $this->testService = $testService;
+    }
+    
+    public function initLessonService(){
+        
     }
 
     public static function getInstance()
@@ -19,11 +24,6 @@ class LessonService{
             self::$instance = new self(LessonModel::getInstance(), LectureService::getInstance(), CourseService::getInstance(), TestService::getInstance());
         }
         return self::$instance;
-    }
-
-    public function initLessonService()
-    {
-
     }
 
     public function addLesson(array $data){
@@ -48,6 +48,7 @@ class LessonService{
             }
         }
     }
+
     public function getLessonsList($id_course){
         if ($this->courseService->checkCourseExistence($id_course)) {
             $lessonsList = $this->lessonModel->getLessonsListByCourseId($id_course);
@@ -66,7 +67,7 @@ class LessonService{
             }
         }
     }
-
+    
     public function getLesson($id_lesson){
         $lesson = $this->lessonModel->getLessonById($id_lesson);
         if (!empty($lesson)){
@@ -89,7 +90,7 @@ class LessonService{
             throw new EntityNotFoundException("Lesson with id: {$id_lesson} does not exist.");
         }
     }
-
+    
     public function deleteLesson($id_lesson){
         if ($this->lessonModel->isLessonCreated($id_lesson)) {
             $this->lessonModel->deleteLesson($id_lesson);
@@ -97,6 +98,7 @@ class LessonService{
             throw new EntityNotFoundException("Lesson with id: " . $id_lesson . "does not exists.");
         }
     }
+
     public function updateLesson(array $data){
         if ($this->lessonModel->isLessonCreated($data['id_lesson'])) {
             if (!$this->lessonModel->getLessonIdByTitle($data['title'])) {
