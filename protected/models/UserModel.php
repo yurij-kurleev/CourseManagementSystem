@@ -1,133 +1,93 @@
 <?php
 include $_SERVER['DOCUMENT_ROOT']."/assets/settings.php";
 
-class UserModel{
-    public function addUser(array $data){
-        try{
-            if($this->isRegistered($data['email'])){
-                header('HTTP/1.1 403 Forbidden', true, 403);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"403\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Collision\",
-                           \"detail\": \"User {$data['login']}:{$data['password']} already exists\"
-                        }
-                    ]
-                }";
-                exit();
-            }
-            $connection = PDOConnection::getInstance()->getConnection();
-            $sql = "INSERT INTO User(name, password, email, register_date, role)
-                    VALUES(?, ?, ?, ?, ?)";
-            $stmt = $connection->prepare($sql);
-            $stmt->execute($data);
-            if(!empty($stmt->errorInfo()[1])){
-                header('HTTP/1.1 500 Internal Server Error', true, 500);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
-                        }
-                    ]
-                }";
-                exit();
-            }
-            return true;
-        }catch(PDOException $e){
-            header('HTTP/1.1 500 Internal Server Error', true, 500);
-            echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"".$e->getMessage()."\"
-                        }
-                    ]
-                }";
-            exit();
+class UserModel extends Model{
+    private static $instance = null;
+
+    protected function __construct()
+    {
+    }
+
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
         }
+        return self::$instance;
+    }
+
+    public function addUser(array $data){
+        $connection = PDOConnection::getInstance()->getConnection();
+        $sql = "INSERT INTO users(name, password, email, register_date, role)
+                VALUES(:name, :password, :email, :register_date, :role)";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
     }
     
     public function isRegistered($email){
-        try {
-            $link = PDOConnection::getInstance()->getConnection();
-            $sql = "SELECT id_u FROM User WHERE email = ?";
-            $stmt = $link->prepare($sql);
-            $stmt->bindParam(1, $email, PDO::PARAM_STR);
-            $stmt->execute();
-            if(!empty($stmt->errorInfo()[1])){
-                header('HTTP/1.1 500 Internal Server Error', true, 500);
-                echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/isRegistered\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
-                        }
-                    ]
-                }";
-                exit();
-            }
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            return !empty($user['id_u']);
-        } catch (PDOException $e){
-            header('HTTP/1.1 500 Internal Server Error', true, 500);
-            echo "{
-                    \"errors\": [
-                        {
-                           \"status\": \"500\",
-                           \"source\": { \"pointer\": \"/protected/models/UserModel/addUser\" },
-                           \"title\":  \"Internal error\",
-                           \"detail\": \"".$e->getMessage()."\"
-                        }
-                    ]
-                }";
-            exit();
-        }
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_u FROM users WHERE email = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $email, PDO::PARAM_STR);
+        $stmt->execute();
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return !empty($user['id_u']);
     }
 
     public function getUserByEmailPassword(array $data){
-        try{
-            $link = PDOConnection::getInstance()->getConnection();
-            $sql = "SELECT * FROM User WHERE email = :email AND password = :password";
-            $stmt = $link->prepare($sql);
-            $stmt->execute(array(':email' => $data['email'], ':password' => $data['password']));
-            if (!empty($stmt->errorInfo()[1])){
-                header("HTTP/1.1 500 Internal Server Error", true, 500);
-                echo "{
-                    \"errors\": [
-                        {
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\": \"/protected/models/UserModel/getUserByEmailPassword\" },
-                            \"title\": \"Internal error\",
-                            \"detail\": \"Error ".$stmt->errorInfo()[0].": ".$stmt->errorInfo()[2]."\"
-                        }
-                    ]
-                }";
-                exit();
-            }
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $user;
-        }catch(PDOException $e){
-            header("HTTP/1.1 500 Internal Server Error", true, 500);
-            echo "{
-                    \"errors\": [
-                        {
-                            \"status\": \"500\",
-                            \"source\": { \"pointer\": \"/protected/models/UserModel/getUserByEmailPassword\" },
-                            \"title\": \"Internal error\",
-                            \"detail\": \"Error ".$e->getMessage()."\"
-                        }
-                    ]
-                }";
-            exit();
-        }
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_u, name, password, email, register_date, role FROM users 
+                WHERE email = :email AND password = :password";
+        $stmt = $link->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+
+    public function getUserById($id)
+    {
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_u, name, password, email, register_date, role FROM users 
+                WHERE id_u = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $id, PDO::PARAM_INT);
+        $stmt->execute();
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+
+    public function subscribeOnCourse(array $data)
+    {
+        $connection = PDOConnection::getInstance()->getConnection();
+        $sql = "INSERT INTO subscriptions(id_u, id_course, date)
+                VALUES(:id_u, :id_course, :date)";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+    }
+
+    public function unsubscribeFromCourse(array $data)
+    {
+        $connection = PDOConnection::getInstance()->getConnection();
+        $sql = "DELETE FROM subscriptions WHERE id_u = :id_u AND id_course = :id_course";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+    }
+
+    public function isSubscribed(array $data)
+    {
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_sub, id_u, id_course, date FROM subscriptions 
+                WHERE id_u = :id_u AND id_course = :id_course";
+        $stmt = $link->prepare($sql);
+        $stmt->execute($data);
+        UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $subscription = $stmt->fetch(PDO::FETCH_ASSOC);
+        return !empty($subscription);
     }
 }
