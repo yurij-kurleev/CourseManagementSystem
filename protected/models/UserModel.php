@@ -73,9 +73,9 @@ class UserModel extends Model{
     public function unsubscribeFromCourse(array $data)
     {
         $connection = PDOConnection::getInstance()->getConnection();
-        $sql = "DELETE FROM subscriptions WHERE id_u = :id_u AND id_course = ?";
+        $sql = "DELETE FROM subscriptions WHERE id_u = :id_u AND id_course = :id_course";
         $stmt = $connection->prepare($sql);
-        $stmt->execute(array('id_u' => $data['id_u']));
+        $stmt->execute($data);
         UserModel::checkErrorArrayEmptiness($stmt->errorInfo());
     }
 

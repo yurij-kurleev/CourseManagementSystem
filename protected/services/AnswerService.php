@@ -46,4 +46,14 @@ class AnswerService{
             throw new EntityNotFoundException("Answer with id: {$data['id_answer']} does not exist.");
         }
     }
+
+    public function getAnswerById($answer_id)
+    {
+        $answer = $this->answerModel->getAnswerById($answer_id);
+        if (empty($answer)) {
+            throw new EntityNotFoundException("Answer with id: " . $answer_id . " not found");
+        } else {
+            return $answer;
+        }
+    }
 }

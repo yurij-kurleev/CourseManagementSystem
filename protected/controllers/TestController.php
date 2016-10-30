@@ -93,8 +93,19 @@ class TestController{
 
     public function estimateAction()
     {
-        /*
-         * id_answer
-         * */
+        $result = 0;
+        $answer_ids = json_decode(file_get_contents("php://input"), true);
+        if (empty($answer_ids)) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(400, "Missing params", "Missing param: id_answer");
+        }
+        try {
+            $result = $this->testService->estimateTest($answer_ids);
+            FrontController::getInstance()->setBody("{mark: $result}");
+            http_response_code(200);
+        } catch (EntityNotFoundException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(404, 'Not found', $e->getMessage());
+        } catch (StatementExecutionException $e) {
+            HTTPResponseBuilder::getInstance()->sendFailRespond(500, 'Internal Error', $e->getMessage());
+        }
     }
 }

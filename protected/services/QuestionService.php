@@ -73,4 +73,14 @@ class QuestionService{
             throw new EntityNotFoundException("Question with id: {$data['id_question']} does not exist.");
         }
     }
+
+    public function getQuestionById($questionId)
+    {
+        $question = $this->questionModel->getQuestionById($questionId);
+        if (empty($question)) {
+            throw new EntityNotFoundException("Question with id: " . $questionId . " not found");
+        } else {
+            return $question;
+        }
+    }
 }

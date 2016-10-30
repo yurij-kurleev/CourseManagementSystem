@@ -60,4 +60,17 @@ class AnswerModel extends Model{
         $stmt->execute(array(':answer' => $data['answer'], ':id_answer' => $data['id_answer']));
         AnswerModel::checkErrorArrayEmptiness($stmt->errorInfo());
     }
+
+    public function getAnswerById($id_answer)
+    {
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_answer, answer, date, is_correct, id_question 
+                FROM answers WHERE  id_answer = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $id_answer, PDO::PARAM_INT);
+        $stmt->execute();
+        AnswerModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $answer = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $answer;
+    }
 }

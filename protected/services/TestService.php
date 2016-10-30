@@ -3,17 +3,19 @@ class TestService{
     private static $instance = null;
     private $testModel;
     private $questionService;
+    private $answerService;
 
-    protected function __construct(TestModel $testModel, QuestionService $questionService)
+    protected function __construct(TestModel $testModel, QuestionService $questionService, AnswerService $answerService)
     {
         $this->testModel = $testModel;
         $this->questionService = $questionService;
+        $this->answerService = $answerService;
     }
 
     public static function getInstance()
     {
         if (is_null(self::$instance)) {
-            self::$instance = new self(TestModel::getInstance(), QuestionService::getInstance());
+            self::$instance = new self(TestModel::getInstance(), QuestionService::getInstance(), AnswerService::getInstance());
         }
         return self::$instance;
     }
@@ -86,5 +88,17 @@ class TestService{
                 //throw new TestException("Empty ".$key."field");
             }
         }
+    }
+
+    public function estimateTest($answer_ids)
+    {
+        $totalMark = 0;
+        foreach ($answer_ids as $answer_id) {
+            $answer = $this->answerService->getAnswerById($answer_id)[0];
+            if (!empty($answer['is_correct'])) {
+                $totalMark += (float)$this->questionService->getQuestionById($answer['id_question'])['points'];
+            }
+        }
+        return $totalMark;
     }
 }

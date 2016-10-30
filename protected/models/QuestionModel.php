@@ -76,4 +76,17 @@ class QuestionModel extends Model{
         $stmt->execute(array(':question' => $data['question'], 'points' => $data['points'], ':id_question' => $data['id_question']));
         QuestionModel::checkErrorArrayEmptiness($stmt->errorInfo());
     }
+
+    public function getQuestionById($id_question)
+    {
+        $link = PDOConnection::getInstance()->getConnection();
+        $sql = "SELECT id_question, question, points, date, id_test 
+                FROM questions WHERE id_question = ?";
+        $stmt = $link->prepare($sql);
+        $stmt->bindParam(1, $id_question, PDO::PARAM_INT);
+        $stmt->execute();
+        QuestionModel::checkErrorArrayEmptiness($stmt->errorInfo());
+        $question = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $question;
+    }
 }
